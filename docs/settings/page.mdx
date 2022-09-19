@@ -1,0 +1,66 @@
+---
+title: "Page Settings"
+description: "Set the title, description, and other metadata of each page"
+---
+
+## Page
+
+### Metadata
+
+Each page is an MDX file that should begin with the following metadata
+
+<CodeGroup>
+
+```md Schema
+---
+title: [title of the page]
+description: [description]
+---
+```
+
+```md Example
+---
+title: "Page"
+description: "Set the title, description, and mode of each page"
+---
+```
+
+</CodeGroup>
+
+<br />
+
+<Note>
+
+Both `title` and `description` are optional.
+
+If `title` is empty, the name of the file is used instead. If `description` is empty, no description will be displayed. However, we recommend adding a description for better SEO!
+
+</Note>
+
+<Note>
+
+The `sidebarTitle` attribute can also be used to override the name of the sidebar navigation button when it exists.
+
+</Note>
+
+### API metadata
+
+API pages lets you build an interactive API playground. To create an API page, you must set an `api` or `openapi` property in the page metadata.
+
+<CodeGroup>
+
+```md API
+---
+api or openapi: [method] [endpoint]
+---
+```
+
+```md API Example
+---
+api or openapi: "GET /users"
+---
+```
+
+</CodeGroup>
+
+Learn more about setting up a page for the API playground in [API components](/api-components/overview).

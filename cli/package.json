@@ -1,0 +1,31 @@
+{
+  "name": "mintlify",
+  "version": "1.0.6",
+  "description": "Mintlify CLI",
+  "engines": {
+    "node": ">=14.16"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Mintlify, Inc.",
+  "license": "ISC",
+  "exports": "./bin/index.js",
+  "bin": {
+    "mintlify": "bin/index.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cheerio": "^0.22.0",
+    "inquirer": "^9.1.0",
+    "minimist-lite": "^2.2.1",
+    "node-html-markdown": "^1.2.0",
+    "puppeteer": "^17.1.2"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.1",
+    "@types/node": "^18.7.13",
+    "typescript": "^4.8.2"
+  }
+}

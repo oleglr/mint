@@ -1,0 +1,51 @@
+import { UserFeedback } from '@/layouts/UserFeedback';
+import { Api } from '@/ui/Api';
+
+type PageHeaderProps = {
+  title: string;
+  description?: string;
+  api?: string;
+  openapi?: string;
+  auth?: string;
+  section: string;
+  children: any;
+};
+
+export function PageHeader({
+  title,
+  description,
+  section,
+  api,
+  openapi,
+  auth,
+  children,
+}: PageHeaderProps) {
+
+  if (!title && !description) return null;
+
+  return (
+    <header id="header" className="relative z-20">
+      <div>
+        <div className="flex">
+          <div className="flex-1">
+            {section && (
+              <p className="mb-2 text-sm leading-6 font-semibold text-primary dark:text-primary-light">
+                {section}
+              </p>
+            )}
+          </div>
+          <UserFeedback title="" />
+        </div>
+        <div className="flex items-center">
+          <h1 className="inline-block text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight dark:text-slate-200">
+            {title}
+          </h1>
+        </div>
+      </div>
+      {description && (
+        <p className="mt-2 text-lg text-slate-700 dark:text-slate-400">{description}</p>
+      )}
+      {api && <Api api={api} children={children} auth={auth} />}
+    </header>
+  );
+}

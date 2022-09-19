@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import faviconConfig from '../prebuild/faviconConfig.js';
 import { promises as _promises } from 'fs';
+import { createPage, injectNav } from '../prebuild/injectNav.js';
+
 const { outputFileSync, readFileSync } = pkg;
 const { readdir, readFile } = _promises;
 
@@ -63,13 +65,23 @@ const getFiles = async () => {
   return { markdownFiles, staticFiles, config };
 };
 
-const injectMarkdownFiles = (markdownFiles) => {
+const injectMarkdownFilesAndNav = (markdownFiles, configObj) => {
+  let pages = {};
   markdownFiles.forEach((markdownFile) => {
     const path = __dirname + `/../src/pages/${markdownFile.path}`;
+    const page = createPage(markdownFile.path, markdownFile.content, undefined);
+    if (page != null) {
+      pages = {
+        ...pages,
+        ...page
+      }
+    }
     outputFileSync(path, Buffer.from(markdownFile.content), { flag: 'w' });
   });
 
   console.log(`📄  ${markdownFiles.length} pages injected`);
+
+  injectNav(pages, configObj);
 };
 
 const injectStaticFiles = (staticFiles) => {
@@ -116,7 +128,8 @@ const injectFavicons = async (config) => {
 
 const getAllFilesAndConfig = async () => {
   const { markdownFiles, staticFiles, config } = await getFiles();
-  injectMarkdownFiles(markdownFiles);
+  const configObj = JSON.parse(config.toString());
+  injectMarkdownFilesAndNav(markdownFiles, configObj);
   injectStaticFiles(staticFiles);
   injectConfig(config);
   injectFavicons(config);

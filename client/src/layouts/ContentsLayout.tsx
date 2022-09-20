@@ -188,6 +188,7 @@ export function ContentsLayout({ children, meta, tableOfContents, section, apiCo
         auth={meta.auth}
         section={section}
         children={children}
+        apiComponents={apiComponents}
       />
       <ContentsContext.Provider value={{ registerHeading, unregisterHeading } as any}>
         <div id="content-wrapper" className="relative z-20 prose prose-slate mt-8 dark:prose-dark">

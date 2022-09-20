@@ -44,6 +44,14 @@ const withApiComponents = () => {
           children
         })
       }
+
+      if (node.name === 'Param' || node.name === 'ParamField') {
+        apiComponents.push({
+          type: 'ParamField',
+          children: node.children,
+          attributes: node.attributes
+        })
+      }
     });
     addExport(tree, 'apiComponents', apiComponents);
     return filter(tree, node => !['ResponseExample', 'RequestExample'].includes(node.name));

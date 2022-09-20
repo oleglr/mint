@@ -1,6 +1,7 @@
 import { ParamProps } from '@/components/Param';
 import { config } from '@/config';
 import { openApi } from '@/openapi';
+import { ApiComponent } from '@/ui/Api';
 import { AxiosRequestHeaders } from 'axios';
 import isAbsoluteUrl from 'is-absolute-url';
 
@@ -143,7 +144,7 @@ export const extractBaseAndPath = (endpoint: string, apiBaseIndex = 0) => {
   };
 };
 
-export const getParamGroupsFromChildren = (children?: Children, auth?: string): ParamGroup[] => {
+export const getParamGroupsFromAPIComponents = (apiComponents?: ApiComponent[], auth?: string): ParamGroup[] => {
   const groups: Record<string, Param[]> = {};
 
   // Add auth if configured
@@ -177,13 +178,23 @@ export const getParamGroupsFromChildren = (children?: Children, auth?: string): 
     }
   }
 
-  children?.forEach((child) => {
+  const paramFields = apiComponents?.filter((apiComponent) => apiComponent.type === 'ParamField')
+    .map((apiComponent) => {
+      const attributesMap: Record<any, any> = {};
+      apiComponent?.attributes?.forEach((attribute: any) => {
+        attributesMap[attribute.name] = attribute.value;
+      });
+
+      return attributesMap;
+    });
+
+  paramFields?.forEach((paramField) => {
     let paramType;
-    if (child?.props?.query) {
+    if (paramField.query) {
       paramType = 'query';
-    } else if (child?.props?.path) {
+    } else if (paramField.path) {
       paramType = 'path';
-    } else if (child?.props?.body) {
+    } else if (paramField.body) {
       paramType = 'body';
     }
 
@@ -194,7 +205,7 @@ export const getParamGroupsFromChildren = (children?: Children, auth?: string): 
     const groupName = paramTypeToNameMap[paramType];
     const existingGroup = groups[groupName];
 
-    const { query, body, path } = child.props;
+    const { query, body, path } = paramField;
 
     let name = query || body || path;
 
@@ -202,12 +213,12 @@ export const getParamGroupsFromChildren = (children?: Children, auth?: string): 
       return;
     }
 
-    const { placeholder, default: defaultValue, required, type, enum: enumValues } = child.props;
+    const { placeholder, default: defaultValue, required, type, enum: enumValues } = paramField;
 
     const param = {
       name,
       placeholder: placeholder?.toString() || defaultValue?.toString(),
-      required,
+      required: required === null,
       type,
       enum: enumValues,
     };

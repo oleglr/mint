@@ -1,12 +1,13 @@
 import favicons from 'favicons';
-import pkg from 'fs-extra';
+import pkg, { remove } from 'fs-extra';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import faviconConfig from '../prebuild/faviconConfig.js';
 import { promises as _promises } from 'fs';
 import { createPage, injectNav } from '../prebuild/injectNav.js';
+import SwaggerParser from "@apidevtools/swagger-parser";
 
-const { outputFileSync, readFileSync } = pkg;
+const { outputFileSync, readFileSync, pathExists } = pkg;
 const { readdir, readFile } = _promises;
 
 const path = process.argv[2] ?? '../docs';
@@ -34,6 +35,7 @@ const getFiles = async () => {
   const markdownFiles = [];
   const staticFiles = [];
   let config = undefined;
+  let openApi = undefined;
   const promises = [];
   fileList.forEach((filename) => {
     promises.push(
@@ -53,6 +55,21 @@ const getFiles = async () => {
           });
           return;
         }
+
+        if (extension === "json" || extension === "yaml" || extension === "yml") {
+          try {
+            outputFileSync(
+              "openapi",
+              Buffer.from(content, "base64").toString("utf-8")
+            );
+            const api = await SwaggerParser.validate("openapi");
+            console.log({api});
+            openApi = Buffer.from(JSON.stringify(api, null, 2), "utf-8");
+          } catch {
+            // not valid openApi
+          }
+          
+        }
         // every other file
         staticFiles.push({
           path: absolutePath,
@@ -62,14 +79,14 @@ const getFiles = async () => {
     );
   });
   await Promise.all(promises);
-  return { markdownFiles, staticFiles, config };
+  return { markdownFiles, staticFiles, config, openApi };
 };
 
-const injectMarkdownFilesAndNav = (markdownFiles, configObj) => {
+const injectMarkdownFilesAndNav = (markdownFiles, configObj, openApiObj) => {
   let pages = {};
   markdownFiles.forEach((markdownFile) => {
     const path = __dirname + `/../src/pages/${markdownFile.path}`;
-    const page = createPage(markdownFile.path, markdownFile.content, undefined);
+    const page = createPage(markdownFile.path, markdownFile.content, openApiObj);
     if (page != null) {
       pages = {
         ...pages,
@@ -99,6 +116,16 @@ const injectConfig = (config) => {
   console.log('⚙️  Config file set properly');
 };
 
+const injectOpenApi = (openApi) => {
+  const path = __dirname + `/../src/openapi.json`;
+  if (openApi) {
+    outputFileSync(path, Buffer.from(openApi), { flag: 'w' });
+    console.log('🖥️  OpenAPI file detected and set as openapi.json');
+    return;
+  }
+  outputFileSync(path, '{}', { flag: 'w' });
+};
+
 const injectFavicons = async (config) => {
   const buffer = Buffer.from(config);
   const configJSON = JSON.parse(buffer.toString());
@@ -126,11 +153,19 @@ const injectFavicons = async (config) => {
   });
 };
 
+const deleteExistingOpenApi = async () => {
+  const path = __dirname + '/../openapi';
+  await remove(path);
+}
+
 const getAllFilesAndConfig = async () => {
-  const { markdownFiles, staticFiles, config } = await getFiles();
+  await deleteExistingOpenApi();
+  const { markdownFiles, staticFiles, config, openApi } = await getFiles();
+  const openApiObj = openApi == null ? null : JSON.parse(openApi.toString());
   const configObj = JSON.parse(config.toString());
-  injectMarkdownFilesAndNav(markdownFiles, configObj);
+  injectMarkdownFilesAndNav(markdownFiles, configObj, openApiObj);
   injectStaticFiles(staticFiles);
+  injectOpenApi(openApi);
   injectConfig(config);
   injectFavicons(config);
 };

@@ -190,11 +190,11 @@ export const getParamGroupsFromAPIComponents = (apiComponents?: ApiComponent[], 
 
   paramFields?.forEach((paramField) => {
     let paramType;
-    if (paramField.query) {
+    if (paramField?.query) {
       paramType = 'query';
-    } else if (paramField.path) {
+    } else if (paramField?.path) {
       paramType = 'path';
-    } else if (paramField.body) {
+    } else if (paramField?.body) {
       paramType = 'body';
     }
 
@@ -218,7 +218,7 @@ export const getParamGroupsFromAPIComponents = (apiComponents?: ApiComponent[], 
     const param = {
       name,
       placeholder: placeholder?.toString() || defaultValue?.toString(),
-      required: required === null,
+      required: required === null || required === true, // intentionally check for just null or true
       type,
       enum: enumValues,
     };

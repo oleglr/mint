@@ -7,17 +7,26 @@ import {
 } from '@/utils/brands';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { childrenArray } from '@/utils/childrenArray';
 import {
   extractBaseAndPath,
   extractMethodAndEndpoint,
   getApiContext,
-  getParamGroupsFromChildren,
+  getParamGroupsFromAPIComponents,
   MediaType,
   Param,
   ParamGroup,
 } from '@/utils/api';
 import { config } from '@/config';
+
+export type ApiComponent = {
+  type: string;
+  children?: any;
+  attributes?: {
+    type: string;
+    name: string;
+    value: string;
+  }[]
+}
 
 export const APIBASE_CONFIG_STORAGE = 'apiBaseIndex';
 
@@ -26,11 +35,13 @@ export function Api({
   media = 'json',
   auth,
   children,
+  apiComponents
 }: {
   api: string;
   media?: MediaType;
   auth?: string;
   children?: any;
+  apiComponents?: ApiComponent[];
 }) {
   const [apiBaseIndex, setApiBaseIndex] = useState(0);
   const { method, endpoint } = extractMethodAndEndpoint(api);
@@ -43,7 +54,7 @@ export function Api({
   const [inputData, setInputData] = useState<Record<string, any>>({});
   const [apiResponse, setApiResponse] = useState<string>();
 
-  const paramGroups = getParamGroupsFromChildren(childrenArray(children), auth);
+  const paramGroups = getParamGroupsFromAPIComponents(apiComponents, auth);
 
   useEffect(() => {
     setCurrentActiveParamGroup(paramGroups[0]);

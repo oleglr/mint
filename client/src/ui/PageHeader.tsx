@@ -1,5 +1,5 @@
 import { UserFeedback } from '@/layouts/UserFeedback';
-import { Api } from '@/ui/Api';
+import { Api, ApiComponent } from '@/ui/Api';
 
 type PageHeaderProps = {
   title: string;
@@ -9,6 +9,7 @@ type PageHeaderProps = {
   auth?: string;
   section: string;
   children: any;
+  apiComponents: ApiComponent[];
 };
 
 export function PageHeader({
@@ -16,9 +17,9 @@ export function PageHeader({
   description,
   section,
   api,
-  openapi,
   auth,
   children,
+  apiComponents
 }: PageHeaderProps) {
 
   if (!title && !description) return null;
@@ -45,7 +46,7 @@ export function PageHeader({
       {description && (
         <p className="mt-2 text-lg text-slate-700 dark:text-slate-400">{description}</p>
       )}
-      {api && <Api api={api} children={children} auth={auth} />}
+      {api && <Api api={api} children={children} auth={auth} apiComponents={apiComponents} />}
     </header>
   );
 }

@@ -15,5 +15,5 @@ export type PageContext = {
 
 type Nav = {
   group?: string,
-  pages?: PageContext[]
+  pages?: (PageContext | Nav)[]
 }

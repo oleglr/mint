@@ -15,7 +15,7 @@ export function DocumentationLayout(props: any) {
   return (
     <>
       <Title suffix={router.pathname === '/' ? '' : config.name}>
-        {props.meta.metaTitle || props.meta.title || defaultTitle}
+        {props.meta.sidebarTitle || props.meta.title || defaultTitle}
       </Title>
       <Head>
         <meta key="twitter:card" name="twitter:card" content="summary" />

@@ -83,7 +83,7 @@ export default function App(props: any) {
 
   return (
     <AnalyticsContext.Provider value={analyticsMediator}>
-      <Title suffix={config.name}>{meta.metaTitle || meta.title}</Title>
+      <Title suffix={config.name}>{meta.sidebarTitle || meta.title}</Title>
       <Head>
         <meta name="description" content={description} />
         <meta key="twitter:card" name="twitter:card" content="summary_large_image" />

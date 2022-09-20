@@ -1,18 +1,17 @@
 import axios from "axios";
 import cheerio from "cheerio";
-import { scrapeGettingFileNameFromUrl } from "./scrapeGettingFileNameFromUrl.js";
-import { getSitemapLinks } from "./getSitemapLinks.js";
+import { scrapeGettingFileNameFromUrl } from "../scrapeGettingFileNameFromUrl.js";
+import { getSitemapLinks } from "../getSitemapLinks.js";
 import { scrapeGitBookPage } from "./scrapeGitBookPage.js";
-import { getOrigin } from "../util.js";
+import { getOrigin } from "../../util.js";
 
 export async function scrapeGitBookSection(
-  href: string,
+  html: string,
+  origin: string,
   cliDir: string,
   overwrite: boolean
 ) {
-  const res = await axios.default.get(href);
-  const $ = cheerio.load(res.data);
-  const origin = getOrigin(href);
+  const $ = cheerio.load(html);
 
   // Get all the navigation sections
   const navigationSections = $(

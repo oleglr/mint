@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import axios from 'axios';
 import { resolve } from 'path';
 import faviconConfig from './faviconConfig.js';
-import { createPage, injectNav } from './injectNav';
+import { createPage, injectNav } from './injectNav.js';
 
 const API_ENDPOINT = 'https://docs.mintlify.com';
 

@@ -50,20 +50,35 @@ export const injectNav = (pages, configObj) => {
   if (configObj?.navigation == null) {
     return;
   }
+
   let navFile = configObj.navigation.map((nav) => createNav(nav));
-  navFile = navFile.map((navGroup) => {
-    const newPages = []
-    navGroup.pages.forEach((page) => {
+  const filterOutNullInPages = (pages) => {
+    const newPages = [];
+    pages.forEach((page) => {
       if (page == null) {
         return;
       }
-      newPages.push(page);
+      if (page?.pages) {
+        const newGroup = filterOutNullInGroup(page);
+        newPages.push(newGroup);
+      } else {
+        newPages.push(page);
+      }
     })
-    return {
-      ...navGroup,
+
+    return newPages;
+  }
+  const filterOutNullInGroup = (group) => {
+    const newPages = filterOutNullInPages(group.pages);
+    const newGroup = {
+      ...group,
       pages: newPages
-    }
-  })
-  fs.outputFileSync(path, JSON.stringify(navFile, null, 2), { flag: 'w' });
+    };
+    return newGroup;
+  }
+  const newNavFile = navFile.map((group) => {
+    return filterOutNullInGroup(group);
+  });
+  fs.outputFileSync(path, JSON.stringify(newNavFile, null, 2), { flag: 'w' });
   console.log(`⛵️ Navigation generated and injected`);
 }

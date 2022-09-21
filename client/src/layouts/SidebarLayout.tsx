@@ -25,8 +25,19 @@ export const SidebarContext = createContext<SidebarContextType>({
   setNavIsOpen: () => {}
 });
 
+const getPaddingByLevel = (level: number) => {
+  switch (level) {
+    case 0:
+      return 'pl-4';
+    case 1:
+      return 'pl-7';
+    default:
+      return 'pl-10';
+  }
+}
+
 const NavItem = forwardRef(
-  ({ page, isSubpage = false }: { page: PageContext | undefined, isSubpage?: boolean }, ref: any) => {
+  ({ page, level = 0 }: { page: PageContext | undefined, level?: number }, ref: any) => {
     const router = useRouter();
 
     if (page == null) {
@@ -34,7 +45,7 @@ const NavItem = forwardRef(
     }
 
     if (page.group && page.pages) {
-      return <GroupDropdown group={page} />
+      return <GroupDropdown group={page} level={level} />
     }
 
     const { href, api: pageApi, openapi } = page;
@@ -51,7 +62,7 @@ const NavItem = forwardRef(
               isActive
                 ? 'text-primary border-current font-semibold dark:text-primary-light'
                 : 'border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300',
-              isSubpage ? 'pl-7' : 'pl-4'
+              getPaddingByLevel(level)
             )}
           >
             {api && (
@@ -70,7 +81,7 @@ const NavItem = forwardRef(
   }
 );
 
-const GroupDropdown = ({ group }: { group: PageContext }) => {
+const GroupDropdown = ({ group, level }: { group: PageContext, level: number }) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { group: name, pages } = group;
@@ -80,15 +91,20 @@ const GroupDropdown = ({ group }: { group: PageContext }) => {
   }
 
   const onClick = () => {
-    if (!isOpen) {
-      router.push(pages[0].href || '/');
+    if (!isOpen && pages[0].href) {
+      // Navigate to the first page if it exists
+      router.push(pages[0].href);
     }
     setIsOpen(!isOpen)
   }
 
   return <>
     <span
-      className='group flex items-center border-l pl-4 -ml-px cursor-pointer space-x-3 border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300'
+      className={clsx(
+          'group flex items-center border-l -ml-px cursor-pointer space-x-3 border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300',
+          getPaddingByLevel(level)
+        )
+      }
       onClick={onClick}
     >
       <div>{name}</div>
@@ -96,7 +112,7 @@ const GroupDropdown = ({ group }: { group: PageContext }) => {
         <path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
       </svg>
     </span>
-    {isOpen && pages.map((subpage) => <NavItem page={subpage} isSubpage />)}
+    {isOpen && pages.map((subpage) => <NavItem page={subpage} level={level + 1} />)}
   </>
 }
 

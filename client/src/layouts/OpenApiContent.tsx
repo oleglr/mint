@@ -1,10 +1,10 @@
 import { Expandable } from '@/components/Expandable';
 import { Heading } from '@/components/Heading';
-import { Param } from '@/components/Param';
+import { ParamField } from '@/components/Param';
 import { ResponseField } from '@/components/ResponseField';
 import { config } from '@/config';
 import { openApi } from '@/openapi';
-import { Api, APIBASE_CONFIG_STORAGE } from '@/ui/Api';
+import { Api, APIBASE_CONFIG_STORAGE, ApiComponent } from '@/ui/Api';
 import { MediaType } from '@/utils/api';
 import { getOpenApiOperationMethodAndEndpoint } from '@/utils/getOpenApiContext';
 import { useEffect, useState } from 'react';
@@ -140,20 +140,53 @@ export function OpenApiContent({ openapi, auth }: OpenApiContentProps) {
     return null;
   }
 
+  let apiComponents: ApiComponent[] = [];
+
   const Parameters = operation.parameters?.map((parameter: any, i: number) => {
     const { name, description, required, schema, in: paramType } = parameter;
     const paramName = { [paramType]: name };
+    const type = getType(schema);
+    apiComponents.push({
+      type: 'ParamField',
+      attributes: [
+        {
+          type: 'mdx',
+          name: paramType,
+          value: name,
+        },
+        {
+          type: 'mdx',
+          name: 'required',
+          value: required,
+        },
+        {
+          type: 'mdx',
+          name: 'type',
+          value: type,
+        },
+        {
+          type: 'mdx',
+          name: 'default',
+          value: schema.default,
+        },
+        {
+          type: 'mdx',
+          name: 'enum',
+          value: schema.enum,
+        }
+      ]
+    })
     return (
-      <Param
+      <ParamField
         key={i}
         {...paramName}
         required={required}
-        type={getType(schema)}
+        type={type}
         default={schema.default}
         enum={schema.enum}
       >
         {description || schema.description || schema.title}
-      </Param>
+      </ParamField>
     );
   });
 
@@ -164,18 +197,56 @@ export function OpenApiContent({ openapi, auth }: OpenApiContentProps) {
   const Body =
     bodySchema?.properties &&
     Object.entries(bodySchema.properties)?.map(([property, value]: any, i: number) => {
+      const required = bodySchema.required?.includes(property);
+      const type = getType(value);
+      const bodyDefault = bodySchema.example ? JSON.stringify(bodySchema.example[property]) : undefined;
       const last = i + 1 === operation.parameters?.length;
+      apiComponents.push({
+        type: 'ParamField',
+        attributes: [
+          {
+            type: 'mdx',
+            name: 'body',
+            value: property,
+          },
+          {
+            type: 'mdx',
+            name: 'required',
+            value: required,
+          },
+          {
+            type: 'mdx',
+            name: 'type',
+            value: type,
+          },
+          {
+            type: 'mdx',
+            name: 'default',
+            value: bodyDefault,
+          },
+          {
+            type: 'mdx',
+            name: 'enum',
+            value: value.enum,
+          },
+          {
+            type: 'mdx',
+            name: 'last',
+            value: last,
+          }
+        ]
+      })
       return (
-        <Param
+        <ParamField
           body={property}
-          required={bodySchema.required?.includes(property)}
-          type={getType(value)}
-          default={bodySchema.example ? JSON.stringify(bodySchema.example[property]) : undefined}
+          required={required}
+          type={type}
+          default={bodyDefault}
           enum={value.enum}
           last={last}
         >
           {value.description || value.title}
-        </Param>
+        </ParamField>
       );
     });
 
@@ -187,12 +258,10 @@ export function OpenApiContent({ openapi, auth }: OpenApiContentProps) {
       ? configBaseUrl[apiBaseIndex]
       : configBaseUrl;
   const api = `${method} ${baseUrl}${endpoint}`;
+  
   return (
     <div className="prose prose-slate dark:prose-dark">
-      <Api api={api} media={getMedia(contentMedia)} auth={auth}>
-        {Parameters}
-        {Body}
-      </Api>
+      <Api api={api} media={getMedia(contentMedia)} auth={auth} apiComponents={apiComponents} />
       <div>
         {Parameters?.length > 0 && (
           <Heading level={3} id="parameters" nextElement={null}>

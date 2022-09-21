@@ -1,17 +1,16 @@
 import axios from "axios";
 import cheerio from "cheerio";
 import { scrapeReadMePage } from "./scrapeReadMePage.js";
-import { getOrigin } from "../util.js";
-import { scrapeGettingFileNameFromUrl } from "./scrapeGettingFileNameFromUrl.js";
+import { getOrigin } from "../../util.js";
+import { scrapeGettingFileNameFromUrl } from "../scrapeGettingFileNameFromUrl.js";
 
 export async function scrapeReadMeSection(
-  href: string,
+  html: string,
+  origin: string,
   cliDir: string,
   overwrite: boolean
 ) {
-  const res = await axios.default.get(href);
-  const $ = cheerio.load(res.data);
-  const origin = getOrigin(href);
+  const $ = cheerio.load(html);
 
   // Get all the navigation sections, but only from the first
   // sidebar found. There are multiple in the HTML for mobile

@@ -1,4 +1,5 @@
 import path from "path";
+import axios from "axios";
 import { createPage } from "../util.js";
 
 export async function scrapeGettingFileNameFromUrl(
@@ -7,7 +8,7 @@ export async function scrapeGettingFileNameFromUrl(
   pathname: string,
   overwrite: boolean,
   scrapePageFunc: (
-    href: string,
+    html: string,
     origin: string,
     imageBaseDir?: string
   ) => Promise<{
@@ -36,8 +37,10 @@ export async function scrapeGettingFileNameFromUrl(
   const imageBaseDir = path.join(cliDir, "images", folders);
 
   // Scrape each page separately
+  const res = await axios.default.get(new URL(pathname, origin).href);
+  const html = res.data;
   const { title, description, markdown } = await scrapePageFunc(
-    new URL(pathname, origin).href,
+    html,
     origin,
     imageBaseDir
   );

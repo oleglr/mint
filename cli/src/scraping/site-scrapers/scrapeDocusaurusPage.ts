@@ -1,15 +1,14 @@
 import axios from "axios";
 import cheerio from "cheerio";
 import { NodeHtmlMarkdown } from "node-html-markdown";
-import downloadAllImages from "./downloadAllImages.js";
+import downloadAllImages from "../downloadAllImages.js";
 
 export async function scrapeDocusaurusPage(
-  href: string,
+  html: string,
   origin: string,
   imageBaseDir?: string
 ) {
-  const res = await axios.default.get(href);
-  const $ = cheerio.load(res.data);
+  const $ = cheerio.load(html);
 
   const content = $(".theme-doc-markdown").first();
 

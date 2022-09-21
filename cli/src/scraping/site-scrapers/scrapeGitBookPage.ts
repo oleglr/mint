@@ -1,30 +1,28 @@
 import axios from "axios";
 import cheerio from "cheerio";
 import { NodeHtmlMarkdown } from "node-html-markdown";
-import downloadAllImages from "./downloadAllImages.js";
 
-export async function scrapeReadMePage(
-  href: string,
+export async function scrapeGitBookPage(
+  html: string,
   origin: string,
   imageBaseDir?: string
 ) {
-  const res = await axios.default.get(href);
-  const $ = cheerio.load(res.data);
+  const $ = cheerio.load(html);
 
-  const titleComponent = $("h1").first();
+  const titleComponent = $('[data-testid="page.title"]').first();
+  const titleAndDescription = titleComponent.parent().parent().parent().text();
+
+  const description = titleAndDescription
+    .replace(titleComponent.text(), "")
+    .trim();
   const title = titleComponent.text().trim();
-  let description = $(".markdown-body", titleComponent.parent()).text().trim();
-  if (!description) {
-    description = $(".rm-Article > header p").text().trim();
-  }
 
-  let content = $(".content-body .markdown-body").first();
-  if (content.length === 0) {
-    content = $(".rm-Article > .markdown-body");
-  }
-  const contentHtml = content.html();
+  const content = $('[data-testid="page.contentEditor"]').first();
+  const contentHtml = $.html(content);
 
-  await downloadAllImages($, content, origin, imageBaseDir);
+  // TO DO: GitBook doesn't have the images in the original HTML,
+  // they are added with JavaScript after the page loads.
+  // await downloadAllImages($, content, origin, imageBaseDir);
 
   const nhm = new NodeHtmlMarkdown();
   let markdown = nhm.translate(contentHtml);
@@ -34,9 +32,6 @@ export async function scrapeReadMePage(
 
   // Remove unnecessary nonwidth blank space characters
   markdown = markdown.replace(/\u200b/g, "");
-
-  // Remove ReadMe anchor links
-  markdown = markdown.replace(/\n\[\]\(#.+\)\n/g, "\n");
 
   // Reduce unnecessary blank lines
   markdown = markdown.replace(/\n\n\n/g, "\n\n");

@@ -48,6 +48,7 @@ type FooterSocials = Record<string, string>;
 export type Config = {
   mintlify?: string;
   name: string;
+  basePath?: string;
   logo?: Logo;
   logoHref?: string;
   favicon?: string;

@@ -13,6 +13,7 @@ import remarkGfm from 'remark-gfm';
 import withStaticProps from './rehype/withStaticProps.js';
 import rehypePrism from '@mapbox/rehype-prism';
 import withApiComponents from './rehype/withApiComponents.js';
+import mintConfig from './src/config.json' assert { type: "json" };;
 
 const withBundleAnalyzer = BundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -35,6 +36,7 @@ export default withSentryConfig(
     images: {
       disableStaticImages: true,
     },
+    basePath: mintConfig?.basePath,
     webpack(config, options) {
       config.module.rules.push({
         test: /\.(png|jpe?g|gif|webp|avif|mp4)$/i,

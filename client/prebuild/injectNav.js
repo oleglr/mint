@@ -23,12 +23,12 @@ export const createPage = (path, content, openApiObj) => {
     }
   });
   // Append data from OpenAPI if it exists
-  const { title } = getOpenApiTitleAndDescription(openApiObj, metadata?.openapi);
+  const { title, description } = getOpenApiTitleAndDescription(openApiObj, metadata?.openapi);
   if (title) {
     defaultTitle = title;
   }
   return {
-    [slug]: { title: defaultTitle, ...metadata, href: `/${slug}` }
+    [slug]: { title: defaultTitle, description, ...metadata, href: `/${slug}` }
   }
 };
 

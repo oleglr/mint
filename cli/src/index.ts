@@ -1,18 +1,20 @@
 #! /usr/bin/env node
 
-import path from "path";
+import axios from "axios";
 import { writeFileSync } from "fs";
 import inquirer from "inquirer";
 import minimistLite from "minimist-lite";
-import { getOrigin } from "./util.js";
 import { MintConfig } from "./templates.js";
-import { createPage, toFilename, objToReadableString } from "./util.js";
-import { scrapeDocusaurusPage } from "./scraping/scrapeDocusaurusPage.js";
-import { scrapeDocusaurusSection } from "./scraping/scrapeDocusaurusSection.js";
-import { scrapeGitBookPage } from "./scraping/scrapeGitBookPage.js";
-import { scrapeGitBookSection } from "./scraping/scrapeGitBookSection.js";
-import { scrapeReadMePage } from "./scraping/scrapeReadMePage.js";
-import { scrapeReadMeSection } from "./scraping/scrapeReadMeSection.js";
+import { scrapePage } from "./scraping/scrapePage.js";
+import { scrapeSection } from "./scraping/scrapeSection.js";
+import { createPage, toFilename, getOrigin } from "./util.js";
+import { scrapeDocusaurusPage } from "./scraping/site-scrapers/scrapeDocusaurusPage.js";
+import { scrapeDocusaurusSection } from "./scraping/site-scrapers/scrapeDocusaurusSection.js";
+import { scrapeGitBookPage } from "./scraping/site-scrapers/scrapeGitBookPage.js";
+import { scrapeGitBookSection } from "./scraping/site-scrapers/scrapeGitBookSection.js";
+import { scrapeReadMePage } from "./scraping/site-scrapers/scrapeReadMePage.js";
+import { scrapeReadMeSection } from "./scraping/site-scrapers/scrapeReadMeSection.js";
+import { detectFramework, Frameworks } from "./scraping/detectFramework.js";
 
 const argv = minimistLite(process.argv.slice(2), {
   boolean: ["overwrite"],
@@ -111,57 +113,100 @@ if (command === "page") {
     });
 }
 
-async function pageScrapeWrapper(
-  scrapeFunc: (
-    href: string,
-    origin: string,
-    imageBaseDir?: string
-  ) => Promise<any>
-) {
+function validateFramework(framework) {
+  if (!framework) {
+    console.log(
+      "Could not detect the framework automatically. Please use one of:"
+    );
+    console.log("scrape-page-docusaurus");
+    console.log("scrape-page-gitbook");
+    console.log("scrape-page-readme");
+    return process.exit(1);
+  }
+}
+
+async function scrapePageAutomatically() {
   const href = argv._[1];
-  const origin = getOrigin(href);
-  const imageBaseDir = path.join(process.cwd(), "images");
-  const { title, description, markdown } = await scrapeFunc(
-    href,
-    origin,
-    imageBaseDir
-  );
-  createPage(title, description, markdown, argv.overwrite, process.cwd());
+  const res = await axios.default.get(href);
+  const html = res.data;
+  const framework = detectFramework(html);
+
+  validateFramework(framework);
+
+  console.log("Detected framework: " + framework);
+
+  if (framework === Frameworks.DOCUSAURUS) {
+    await scrapePageWrapper(scrapeDocusaurusPage);
+  } else if (framework === Frameworks.GITBOOK) {
+    await scrapePageWrapper(scrapeGitBookPage);
+  } else if (framework === Frameworks.README) {
+    await scrapePageWrapper(scrapeReadMePage);
+  }
+}
+
+async function scrapePageWrapper(scrapeFunc) {
+  const href = argv._[1];
+  const res = await axios.default.get(href);
+  const html = res.data;
+  await scrapePage(scrapeFunc, href, html, argv.overwrite);
   process.exit(1);
+}
+
+if (command === "scrape-page") {
+  await scrapePageAutomatically();
 }
 
 if (command === "scrape-docusaurus-page") {
-  await pageScrapeWrapper(scrapeDocusaurusPage);
+  await scrapePageWrapper(scrapeDocusaurusPage);
 }
 
 if (command === "scrape-gitbook-page") {
-  await pageScrapeWrapper(scrapeGitBookPage);
+  await scrapePageWrapper(scrapeGitBookPage);
 }
 
 if (command === "scrape-readme-page") {
-  await pageScrapeWrapper(scrapeReadMePage);
+  await scrapePageWrapper(scrapeReadMePage);
 }
 
-async function sectionScrapeWrapper(scrapeFunc) {
+async function scrapeSectionAutomatically() {
   const href = argv._[1];
-  console.log(
-    `Started scraping${argv.overwrite ? ", overwrite mode is on" : ""}...`
-  );
-  const groupsConfig = await scrapeFunc(href, process.cwd(), argv.overwrite);
-  console.log("Finished scraping.");
-  console.log("Add the following to your navigation in mint.config.json:");
-  console.log(objToReadableString(groupsConfig));
+  const res = await axios.default.get(href);
+  const html = res.data;
+  const framework = detectFramework(html);
+
+  validateFramework(framework);
+
+  console.log("Detected framework: " + framework);
+
+  if (framework === Frameworks.DOCUSAURUS) {
+    await scrapeSectionWrapper(scrapeDocusaurusSection);
+  } else if (framework === Frameworks.GITBOOK) {
+    await scrapeSectionWrapper(scrapeGitBookSection);
+  } else if (framework === Frameworks.README) {
+    await scrapeSectionWrapper(scrapeReadMeSection);
+  }
+}
+
+async function scrapeSectionWrapper(scrapeFunc: any) {
+  const href = argv._[1];
+  const res = await axios.default.get(href);
+  const html = res.data;
+  await scrapeSection(scrapeFunc, html, getOrigin(href), argv.overwrite);
   process.exit(1);
 }
 
+if (command === "scrape-section") {
+  await scrapeSectionAutomatically();
+}
+
 if (command === "scrape-docusaurus-section") {
-  await sectionScrapeWrapper(scrapeDocusaurusSection);
+  await scrapeSectionWrapper(scrapeDocusaurusSection);
 }
 
 if (command === "scrape-gitbook-section") {
-  await sectionScrapeWrapper(scrapeGitBookSection);
+  await scrapeSectionWrapper(scrapeGitBookSection);
 }
 
 if (command === "scrape-readme-section") {
-  await sectionScrapeWrapper(scrapeReadMeSection);
+  await scrapeSectionWrapper(scrapeReadMeSection);
 }

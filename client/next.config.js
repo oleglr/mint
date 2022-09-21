@@ -84,7 +84,16 @@ export default withSentryConfig(
                 withNextLinks,
                 withSmartypants
               ],
-              rehypePlugins: [rehypePrism,withLinkRoles]
+              rehypePlugins: [
+                [
+                  rehypePrism,
+                  {
+                    ignoreMissing: true
+                  }
+                ],
+                withCodeBlocks,
+                withLinkRoles
+              ]
             },
           },
         ],

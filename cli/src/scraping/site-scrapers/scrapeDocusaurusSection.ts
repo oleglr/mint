@@ -1,17 +1,16 @@
 import axios from "axios";
 import cheerio from "cheerio";
-import { scrapeGettingFileNameFromUrl } from "./scrapeGettingFileNameFromUrl.js";
+import { scrapeGettingFileNameFromUrl } from "../scrapeGettingFileNameFromUrl.js";
 import { scrapeDocusaurusPage } from "./scrapeDocusaurusPage.js";
-import { getOrigin } from "../util.js";
+import { getOrigin } from "../../util.js";
 
 export async function scrapeDocusaurusSection(
-  href: string,
+  html: string,
+  origin: string,
   cliDir: string,
   overwrite: boolean
 ) {
-  const res = await axios.default.get(href);
-  const $ = cheerio.load(res.data);
-  const origin = getOrigin(href);
+  const $ = cheerio.load(html);
 
   // Get all the navigation sections
   const navigationSections = $(".theme-doc-sidebar-menu").first().children();

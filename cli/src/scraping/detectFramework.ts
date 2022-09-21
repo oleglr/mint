@@ -8,5 +8,24 @@ export enum Frameworks {
 
 export function detectFramework(html) {
   const $ = cheerio.load(html);
-  return Frameworks.README;
+  const docusaurusMeta = $('meta[name="generator"]');
+
+  if (
+    docusaurusMeta.length > 0 &&
+    docusaurusMeta.attr("content").includes("Docusaurus")
+  ) {
+    return Frameworks.DOCUSAURUS;
+  }
+
+  const isGitBook = $(".gitbook-root").length > 0;
+  if (isGitBook) {
+    return Frameworks.GITBOOK;
+  }
+
+  const isReadMe = $('meta[name="readme-deploy"]').length > 0;
+  if (isReadMe) {
+    return Frameworks.README;
+  }
+
+  return undefined;
 }

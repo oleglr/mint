@@ -18,6 +18,7 @@ import AnalyticsContext from '@/analytics/AnalyticsContext';
 import FakeAnalyticsMediator from '@/analytics/FakeAnalyticsMediator';
 import { AnalyticsMediatorInterface } from '@/analytics/AnalyticsInterface';
 import { DocumentationLayout } from '@/layouts/DocumentationLayout';
+import { documentationNav, findPageInGroup } from '@/nav';
 
 if (typeof window !== 'undefined' && !('ResizeObserver' in window)) {
   window.ResizeObserver = ResizeObserver;
@@ -72,11 +73,18 @@ export default function App(props: any) {
   }, [navIsOpen]);
 
   const Layout = pageProps?.isMdx ? DocumentationLayout : Fragment;
-  const meta = pageProps.meta || {};
-  const description =
-    meta.metaDescription || meta.description || `Documentation for ${config.name}`;
-  const layoutProps = { navIsOpen, setNavIsOpen, meta };
 
+  let page = {}
+  documentationNav.forEach((group) => {
+    const foundPage = findPageInGroup(group, router.pathname);
+    if (foundPage?.title) {
+      page = foundPage;
+      return;
+    }
+  });
+  const meta = {...pageProps.meta, ...page};
+  const description = meta.description || `Documentation for ${config.name}`;
+  const layoutProps = { navIsOpen, setNavIsOpen, meta };
   let section = config.navigation?.find((nav) =>
     nav.pages.find((page) => `/${page}` === router.pathname)
   )?.group;
@@ -118,7 +126,7 @@ export default function App(props: any) {
           section={section}
         />
         <Layout {...layoutProps}>
-          <Component section={section} {...pageProps} />
+          <Component section={section} meta={meta} />
         </Layout>
       </SearchProvider>
     </AnalyticsContext.Provider>

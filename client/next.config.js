@@ -141,7 +141,7 @@ export default withSentryConfig(
             if (!/^\s*export\s+default\s+/m.test(source.replace(/```(.*?)```/gs, ''))) {
               extra.push(
                 `import { ContentsLayout as _Default } from '@/layouts/ContentsLayout'`,
-                `export default (props) => <_Default {...props} meta={${JSON.stringify(meta)}} tableOfContents={tableOfContents} apiComponents={apiComponents}>{props.children}</_Default>`
+                `export default (props) => <_Default meta={${JSON.stringify(meta)}} {...props} tableOfContents={tableOfContents} apiComponents={apiComponents}>{props.children}</_Default>`
               );
             }
 

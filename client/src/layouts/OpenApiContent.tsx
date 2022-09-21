@@ -252,7 +252,7 @@ export function OpenApiContent({ openapi, auth }: OpenApiContentProps) {
 
   let responseSchema = operation.responses?.['200']?.content?.['application/json']?.schema;
   // endpoint in OpenAPI refers to the path
-  const configBaseUrl = openApi?.servers?.map((server: { url: string }) => server.url) ?? config.api?.baseUrl;
+  const configBaseUrl = config.api?.baseUrl ?? openApi?.servers?.map((server: { url: string }) => server.url);
   const baseUrl =
     configBaseUrl && Array.isArray(configBaseUrl)
       ? configBaseUrl[apiBaseIndex]

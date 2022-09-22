@@ -21,16 +21,11 @@ const withApiComponents = () => {
     let apiComponents = [];
     visit(tree, 'mdxJsxFlowElement', (node) => {
       if(['ResponseExample', 'RequestExample'].includes(node.name)) {
-        const nodeType = node.name.slice(0, -7);
         // remove all jsx components to convert to html (removes <ResponseExample> and <Editor>)
         const children = node.children.map((child, i) => {
           const preComponent = child.children[0];
           const html = toHtml(preComponent);
-          let filename = i === 0 ? nodeType : `${nodeType} ${i + 1}`;
-          const className = preComponent?.properties?.className[0];
-          if (className) {
-            filename = langFilename(className)
-          }
+          let filename =  preComponent?.properties?.className[0] ? langFilename(preComponent?.properties?.className[0]) : '';
           if (child?.attributes && child.attributes.length > 0) {
             filename = child.attributes[0]?.value;
           }

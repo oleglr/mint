@@ -11,9 +11,9 @@ import withImportsInjected from './remark/withImportsInjected.js';
 import BundleAnalyzer from '@next/bundle-analyzer';
 import remarkGfm from 'remark-gfm';
 import withStaticProps from './rehype/withStaticProps.js';
-import rehypePrism from '@mapbox/rehype-prism';
 import withApiComponents from './rehype/withApiComponents.js';
-import mintConfig from './src/config.json' assert { type: "json" };;
+import mintConfig from './src/config.json' assert { type: "json" };
+import withSyntaxHighlighting from './rehype/withSyntaxHighlighting.js';
 
 const withBundleAnalyzer = BundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -86,7 +86,7 @@ export default withSentryConfig(
               ],
               rehypePlugins: [
                 [
-                  rehypePrism,
+                  withSyntaxHighlighting,
                   {
                     ignoreMissing: true
                   }
@@ -117,7 +117,7 @@ export default withSentryConfig(
               ],
               rehypePlugins: [
                 [
-                  rehypePrism,
+                  withSyntaxHighlighting,
                   {
                     ignoreMissing: true
                   }

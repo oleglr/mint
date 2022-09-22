@@ -21,20 +21,29 @@ const withCodeBlocks = () => {
         return newArray;
       }
       node.children = prepend(copyToClipboard, node.children);
+      let filename = undefined;
+      if (['RequestExample', 'ResponseExample'].includes(parent.name)) {
+        const parentType = parent.name.slice(0, -7);
+        filename = i === 0 ? parentType : `${parentType} ${i + 1}`;
+        node.children[0].data.meta = filename;
+      }
+      
       if (code.data?.meta) {
+        filename = code.data.meta
+      }
+      if (filename) {
         if (!componentName) {
           componentName = addImport(preTree, '@/components/Editor', 'Editor');
         }
         const wrap = {
           type: 'mdxJsxFlowElement',
           name: componentName,
-          attributes: [{type: 'mdxJsxAttribute', name: 'filename', value: code.data.meta}],
+          attributes: [{type: 'mdxJsxAttribute', name: 'filename', value: filename }],
           data: { _mdxExplicitJsx: true }
         }
         wrap.children = [node]
         parent.children[i] = wrap;
       }
-      return node;
     });
     tree.children = [...preTree.children, ...tree.children];
   }

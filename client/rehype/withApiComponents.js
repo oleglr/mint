@@ -25,7 +25,7 @@ const withApiComponents = () => {
         const children = node.children.map((child, i) => {
           const preComponent = child.children[0];
           const html = toHtml(preComponent);
-          let filename =  preComponent?.properties?.className[0] ? langFilename(preComponent?.properties?.className[0]) : '';
+          let filename =  preComponent?.properties?.className?.length > 1 ? langFilename(preComponent?.properties?.className[0]) : '';
           if (child?.attributes && child.attributes.length > 0) {
             filename = child.attributes[0]?.value;
           }

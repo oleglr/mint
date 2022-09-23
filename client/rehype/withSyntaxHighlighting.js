@@ -2,7 +2,8 @@
 import visit from 'unist-util-visit';
 import { toString } from 'hast-util-to-string';
 import { refractor } from 'refractor';
-
+import jsx from 'refractor/lang/jsx.js';
+refractor.register(jsx);
 const withSyntaxHighlighting = (options) => {
   options = options || {};
 

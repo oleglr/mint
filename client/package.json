@@ -35,7 +35,6 @@
     "@mintlify/components": "^0.1.18",
     "@next/bundle-analyzer": "^12.3.1",
     "@next/mdx": "^12.3.0",
-    "@reach/alert": "^0.17.0",
     "@reach/rect": "^0.17.0",
     "@sentry/nextjs": "^7.9.0",
     "@sindresorhus/slugify": "^1.1.0",

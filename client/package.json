@@ -123,7 +123,6 @@
     "eslint-plugin-react": "7.x",
     "eslint-plugin-react-hooks": "^4.6.0",
     "favicons": "7.0.0-beta.4",
-    "glyphhanger": "^5.0.0",
     "gray-matter": "^4.0.3",
     "hast-util-to-string": "^2.0.0",
     "prettier": "^2.5.0",

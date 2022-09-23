@@ -66,6 +66,7 @@ export async function scrapeDocusaurusSection(
               pathname,
               overwrite,
               scrapeDocusaurusPage,
+              false,
               "/docs"
             )
           )

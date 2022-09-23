@@ -15,6 +15,7 @@ import { scrapeGitBookSection } from "./scraping/site-scrapers/scrapeGitBookSect
 import { scrapeReadMePage } from "./scraping/site-scrapers/scrapeReadMePage.js";
 import { scrapeReadMeSection } from "./scraping/site-scrapers/scrapeReadMeSection.js";
 import { detectFramework, Frameworks } from "./scraping/detectFramework.js";
+import { startBrowser, getHtmlWithPuppeteer } from "./browser.js";
 
 const argv = minimistLite(process.argv.slice(2), {
   boolean: ["overwrite"],
@@ -138,16 +139,21 @@ async function scrapePageAutomatically() {
   if (framework === Frameworks.DOCUSAURUS) {
     await scrapePageWrapper(scrapeDocusaurusPage);
   } else if (framework === Frameworks.GITBOOK) {
-    await scrapePageWrapper(scrapeGitBookPage);
+    await scrapePageWrapper(scrapeGitBookPage, true);
   } else if (framework === Frameworks.README) {
     await scrapePageWrapper(scrapeReadMePage);
   }
 }
 
-async function scrapePageWrapper(scrapeFunc) {
+async function scrapePageWrapper(scrapeFunc, puppeteer = false) {
   const href = argv._[1];
-  const res = await axios.default.get(href);
-  const html = res.data;
+  let html;
+  if (puppeteer) {
+    html = await getHtmlWithPuppeteer(href);
+  } else {
+    const res = await axios.default.get(href);
+    html = res.data;
+  }
   await scrapePage(scrapeFunc, href, html, argv.overwrite);
   process.exit(1);
 }
@@ -161,7 +167,7 @@ if (command === "scrape-docusaurus-page") {
 }
 
 if (command === "scrape-gitbook-page") {
-  await scrapePageWrapper(scrapeGitBookPage);
+  await scrapePageWrapper(scrapeGitBookPage, true);
 }
 
 if (command === "scrape-readme-page") {
@@ -179,18 +185,76 @@ async function scrapeSectionAutomatically() {
   console.log("Detected framework: " + framework);
 
   if (framework === Frameworks.DOCUSAURUS) {
-    await scrapeSectionWrapper(scrapeDocusaurusSection);
+    await scrapeSectionAxiosWrapper(scrapeDocusaurusSection);
   } else if (framework === Frameworks.GITBOOK) {
-    await scrapeSectionWrapper(scrapeGitBookSection);
+    await scrapeSectionGitBookWrapper(scrapeGitBookSection);
   } else if (framework === Frameworks.README) {
-    await scrapeSectionWrapper(scrapeReadMeSection);
+    await scrapeSectionAxiosWrapper(scrapeReadMeSection);
   }
 }
 
-async function scrapeSectionWrapper(scrapeFunc: any) {
+async function scrapeSectionAxiosWrapper(scrapeFunc: any) {
   const href = argv._[1];
   const res = await axios.default.get(href);
   const html = res.data;
+  await scrapeSection(scrapeFunc, html, getOrigin(href), argv.overwrite);
+  process.exit(1);
+}
+
+async function scrapeSectionGitBookWrapper(scrapeFunc: any) {
+  const href = argv._[1];
+
+  const browser = await startBrowser();
+  const page = await browser.newPage();
+  await page.goto(href, {
+    waitUntil: "networkidle2",
+  });
+
+  let prevEncountered = [];
+  let encounteredHref = ["fake"];
+
+  // Loop until we've encountered every link
+  while (!encounteredHref.every((href) => prevEncountered.includes(href))) {
+    prevEncountered = encounteredHref;
+    encounteredHref = await page.evaluate(
+      (encounteredHref) => {
+        const icons = Array.from(
+          document.querySelectorAll('path[d="M9 18l6-6-6-6"]')
+        );
+
+        const linksFound = [];
+        icons.forEach(async (icon: HTMLElement) => {
+          const toClick = icon.parentElement.parentElement;
+          const link = toClick.parentElement.parentElement;
+
+          // Skip icons not in the side navigation
+          if (!link.hasAttribute("href")) {
+            return;
+          }
+
+          const href = link.getAttribute("href");
+
+          // Should never occur but we keep it as a fail-safe
+          if (href.startsWith("https://") || href.startsWith("http://")) {
+            return;
+          }
+
+          // Click any links we haven't seen before
+          if (!encounteredHref.includes(href)) {
+            toClick.click();
+          }
+
+          linksFound.push(href);
+        });
+
+        return linksFound;
+      },
+      encounteredHref // Need to pass array into the browser
+    );
+  }
+
+  const html = await page.content();
+  browser.close();
   await scrapeSection(scrapeFunc, html, getOrigin(href), argv.overwrite);
   process.exit(1);
 }
@@ -200,13 +264,13 @@ if (command === "scrape-section") {
 }
 
 if (command === "scrape-docusaurus-section") {
-  await scrapeSectionWrapper(scrapeDocusaurusSection);
+  await scrapeSectionAxiosWrapper(scrapeDocusaurusSection);
 }
 
 if (command === "scrape-gitbook-section") {
-  await scrapeSectionWrapper(scrapeGitBookSection);
+  await scrapeSectionGitBookWrapper(scrapeGitBookSection);
 }
 
 if (command === "scrape-readme-section") {
-  await scrapeSectionWrapper(scrapeReadMeSection);
+  await scrapeSectionAxiosWrapper(scrapeReadMeSection);
 }

@@ -1,6 +1,6 @@
-import axios from "axios";
 import cheerio from "cheerio";
 import { NodeHtmlMarkdown } from "node-html-markdown";
+import downloadAllImages from "../downloadAllImages.js";
 
 export async function scrapeGitBookPage(
   html: string,
@@ -20,9 +20,7 @@ export async function scrapeGitBookPage(
   const content = $('[data-testid="page.contentEditor"]').first();
   const contentHtml = $.html(content);
 
-  // TO DO: GitBook doesn't have the images in the original HTML,
-  // they are added with JavaScript after the page loads.
-  // await downloadAllImages($, content, origin, imageBaseDir);
+  await downloadAllImages($, content, origin, imageBaseDir);
 
   const nhm = new NodeHtmlMarkdown();
   let markdown = nhm.translate(contentHtml);

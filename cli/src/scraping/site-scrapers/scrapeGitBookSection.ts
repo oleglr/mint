@@ -18,7 +18,7 @@ export async function scrapeGitBookSection(
     'div[data-testid="page.desktopTableOfContents"] > div > div:first-child'
   )
     .children()
-    .eq(1)
+    .first()
     .children()
     .first()
     .children();
@@ -69,33 +69,37 @@ export async function scrapeGitBookSection(
     })
     .filter((pathname: string) => !allNavPathnames.includes(pathname));
 
-  const sitemapPathnamesForConfig = await Promise.all(
-    sitemapPaths.map(
-      async (pathname: string) =>
-        await scrapeGettingFileNameFromUrl(
-          cliDir,
-          origin,
-          pathname,
-          overwrite,
-          scrapeGitBookPage
-        )
-    )
-  );
+  const sitemapPathnamesForConfig = [];
+  for (const pathname of sitemapPaths) {
+    sitemapPathnamesForConfig.push(
+      await scrapeGettingFileNameFromUrl(
+        cliDir,
+        origin,
+        pathname,
+        overwrite,
+        scrapeGitBookPage,
+        true
+      )
+    );
+  }
 
   // Scrape each link in the navigation.
   const groupsConfigCleanPaths = await Promise.all(
     groupsConfig.map(async (groupConfig) => {
-      groupConfig.pages = await Promise.all(
-        groupConfig.pages.map(async (pathname: string) =>
-          scrapeGettingFileNameFromUrl(
+      const newPages = [];
+      for (const pathname of groupConfig.pages) {
+        newPages.push(
+          await scrapeGettingFileNameFromUrl(
             cliDir,
             origin,
             pathname,
             overwrite,
-            scrapeGitBookPage
+            scrapeGitBookPage,
+            true
           )
-        )
-      );
+        );
+      }
+      groupConfig.pages = newPages;
       return groupConfig;
     })
   );

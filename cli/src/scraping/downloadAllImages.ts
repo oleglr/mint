@@ -34,6 +34,15 @@ export default async function downloadAllImages(
             srcSplit.slice(0, -1).join(".") + "." + fileExtension.split("#")[0]
           );
         })
+        .map((src: string) => {
+          // Some frameworks add metadata after the file extension with
+          // a question mark before it, we need to remove that.
+          const srcSplit = src.split(".");
+          const fileExtension = srcSplit[srcSplit.length - 1];
+          return (
+            srcSplit.slice(0, -1).join(".") + "." + fileExtension.split("?")[0]
+          );
+        })
     ),
   ];
 

@@ -34,6 +34,12 @@
       "icon": "comments",
       "color": "#2564eb",
       "url": "https://discord.gg/b499CK8P9g"
+    },
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "color": "#333333",
+      "url": "https://github.com/mintlify/mint"
     }
   ],
   "navigation": [

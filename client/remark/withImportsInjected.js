@@ -1,10 +1,10 @@
-import { addImportString } from "./utils.js";
+import { addImportString } from './utils.js';
 
 const imports = `
 import { Accordion, AccordionGroup } from '@/components/Accordion'
 import { Heading } from '@/components/Heading'
 import { CodeGroup, SnippetGroup } from '@/components/CodeGroup'
-import { TipInfo, TipWarning, Info, Warning, Note, Tip, Check } from '@/components/Callouts'
+import { Info, Warning, Note, Tip, Check } from "@mintlify/components";
 import { RequestSimple } from '@/components/Request'
 import { RequestExample, ResponseExample } from '@/components/ApiExample'
 import { Param, ParamField } from '@/components/Param'
@@ -18,7 +18,6 @@ import { solid, regular, light, thin, duotone, brands } from '@fortawesome/fonta
 
 const withImportsInjected = () => {
   return (tree) => {
-
     tree.children = tree.children.filter((node) => {
       return (
         (node.type === 'import' && !node.value?.includes('@/components/')) || node.type !== 'import'
@@ -31,7 +30,6 @@ const withImportsInjected = () => {
       .forEach((importLine) => {
         addImportString(tree, importLine);
       });
-
   };
 };
 

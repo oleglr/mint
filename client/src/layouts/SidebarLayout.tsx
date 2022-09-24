@@ -6,7 +6,7 @@ import { createContext, forwardRef, useRef, useState } from 'react';
 import { useIsomorphicLayoutEffect } from '@/hooks/useIsomorphicLayoutEffect';
 import clsx from 'clsx';
 import { Dialog } from '@headlessui/react';
-import { config, Page, findFirstPage } from '../config';
+import { config, findFirstPage } from '../config';
 import { StyledTopLevelLink, TopLevelLink } from '../ui/TopLevelLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getMethodDotsColor } from '@/utils/brands';
@@ -204,7 +204,7 @@ function Nav({ nav, children, mobile = false }: any) {
         {config?.anchors != null && config.anchors.length > 0 && <TopLevelNav mobile={mobile} />}
         {children}
         {nav &&
-          numPages > 1 &&
+          numPages > 0 &&
           nav
             .map(({ group, pages }: { group: string; pages: PageContext[] }, i: number) => {
               return (
@@ -343,15 +343,14 @@ export function SidebarLayout({
   let navForDivision = getGroupsInDivision(nav, currentDivision?.url ? [currentDivision?.url] : []);
 
   if (navForDivision.length === 0) {
-    // for base docs
+    // Base docs include everything NOT in an anchor
     const divisions = config.anchors?.filter((anchor) => !isAbsoluteUrl(anchor.url)) || [];
-
-    // Everything NOT in an achor
     navForDivision = getGroupsNotInDivision(
       nav,
       divisions.map((division) => division.url)
     );
   }
+
   return (
     <SidebarContext.Provider value={{ nav, navIsOpen, setNavIsOpen }}>
       <Wrapper allowOverflow={allowOverflow}>

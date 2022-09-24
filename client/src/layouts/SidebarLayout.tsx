@@ -11,8 +11,9 @@ import { StyledTopLevelLink, TopLevelLink } from '../ui/TopLevelLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getMethodDotsColor } from '@/utils/brands';
 import { extractMethodAndEndpoint } from '@/utils/api';
-import { PageContext, Group, Groups } from '@/nav';
+import { PageContext, Group, Groups, GroupPage, isGroup } from '@/nav';
 import { getGroupsInDivision, getGroupsNotInDivision } from '@/layouts/getGroupsInDivision';
+import isPathInGroupPages from './isPathInGroupPages';
 
 type SidebarContextType = {
   nav: any;
@@ -39,22 +40,22 @@ const getPaddingByLevel = (level: number) => {
 };
 
 const NavItem = forwardRef(
-  ({ page, level = 0 }: { page: PageContext | undefined; level?: number }, ref: any) => {
+  ({ groupPage, level = 0 }: { groupPage: GroupPage | undefined; level?: number }, ref: any) => {
     const router = useRouter();
 
-    if (page == null) {
+    if (groupPage == null) {
       return null;
     }
 
-    if (page.group && page.pages) {
-      return <GroupDropdown group={page} level={level} />;
+    if (isGroup(groupPage)) {
+      return <GroupDropdown group={groupPage} level={level} />;
     }
 
-    const { href, api: pageApi, openapi } = page;
+    const { href, api: pageApi, openapi } = groupPage;
 
-    const isActive = page.href === router.pathname;
+    const isActive = groupPage.href === router.pathname;
     const api = pageApi || openapi;
-    const title = page.sidebarTitle || page.title;
+    const title = groupPage.sidebarTitle || groupPage.title;
 
     return (
       <li ref={ref}>
@@ -94,7 +95,16 @@ const GroupDropdown = ({ group, level }: { group: Group; level: number }) => {
   }
 
   const onClick = () => {
-    if (!isOpen && pages[0].href) {
+    // Do not navigate if:
+    // 1. closing
+    // 2. The first link is another nested menu
+    // 3. The current page is in the nested pages being exposed
+    if (
+      !isOpen &&
+      !isGroup(pages[0]) &&
+      pages[0]?.href &&
+      !isPathInGroupPages(router.pathname, pages)
+    ) {
       // Navigate to the first page if it exists
       router.push(pages[0].href);
     }
@@ -129,7 +139,7 @@ const GroupDropdown = ({ group, level }: { group: Group; level: number }) => {
           ></path>
         </svg>
       </span>
-      {isOpen && pages.map((subpage) => <NavItem page={subpage} level={level + 1} />)}
+      {isOpen && pages.map((subpage) => <NavItem groupPage={subpage} level={level + 1} />)}
     </>
   );
 };
@@ -226,7 +236,7 @@ function Nav({ nav, children, mobile = false }: any) {
                     )}
                   >
                     {pages.map((page, i: number) => {
-                      return <NavItem key={i} page={page} />;
+                      return <NavItem key={i} groupPage={page} />;
                     })}
                   </ul>
                 </li>

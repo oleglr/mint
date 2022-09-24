@@ -91,3 +91,13 @@ export type Config = {
     analytics?: Analytics;
   };
 };
+
+export const findFirstPage = (group: Navigation, target: string): Page | undefined => {
+  return group.pages.find((page) => {
+    if (typeof page === 'string') {
+      return page.includes(target)
+    } else {
+      return findFirstPage(page, target);
+    }
+  })
+}

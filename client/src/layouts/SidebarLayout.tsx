@@ -5,7 +5,7 @@ import { createContext, forwardRef, useRef, useState } from 'react';
 import { useIsomorphicLayoutEffect } from '@/hooks/useIsomorphicLayoutEffect';
 import clsx from 'clsx';
 import { Dialog } from '@headlessui/react';
-import { config, Page } from '../config';
+import { config, Page, findFirstPage } from '../config';
 import { StyledTopLevelLink, TopLevelLink } from '../ui/TopLevelLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getMethodDotsColor } from '@/utils/brands';
@@ -264,19 +264,18 @@ function TopLevelNav({ mobile }: { mobile: boolean }) {
           if (isAbsolute) {
             href = anchor.url;
           } else {
-            const firstPage = config.navigation?.find((nav) => {
-              return nav.pages.find((page) => {
-                // Only work for non-nested navs
+            config.navigation?.every((nav) => {
+              const page = findFirstPage(nav, `${anchor.url}/`);
+              if (page) {
                 if (typeof page === 'string') {
-                  return page.includes(`${anchor.url}/`)
+                  href = `/${page}`;
+                } else {
+                  href = `/${page.pages[0]}`
                 }
-
                 return false;
-              });
+              }
+              return true;
             });
-            if (firstPage) {
-              href = `/${firstPage.pages[0]}`;
-            }
           }
 
           return (

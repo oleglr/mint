@@ -30,7 +30,8 @@ export function DocumentationLayout({
 
   let defaultTitle = null;
   if (slug != null) {
-    defaultTitle = slugToTitle(router.pathname);
+    // TO DO: Fix regression, we are not passing in slug.
+    defaultTitle = slugToTitle(slug);
   }
   return (
     <>

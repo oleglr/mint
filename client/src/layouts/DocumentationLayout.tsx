@@ -28,11 +28,8 @@ export function DocumentationLayout({
     return <>{children}</>;
   }
 
-  let defaultTitle = null;
-  if (slug != null) {
-    // TO DO: Fix regression, we are not passing in slug.
-    defaultTitle = slugToTitle(slug);
-  }
+  const defaultTitle = slugToTitle(router.pathname);
+
   return (
     <>
       <Title suffix={router.pathname === '/' ? '' : config.name}>

@@ -3,7 +3,11 @@ import visit from 'unist-util-visit';
 import { toString } from 'hast-util-to-string';
 import { refractor } from 'refractor';
 import jsx from 'refractor/lang/jsx.js';
+import docker from 'refractor/lang/docker.js';
+
 refractor.register(jsx);
+refractor.register(docker);
+
 const withSyntaxHighlighting = (options) => {
   options = options || {};
 

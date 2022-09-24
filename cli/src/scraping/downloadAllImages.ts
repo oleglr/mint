@@ -26,13 +26,7 @@ export default async function downloadAllImages(
           src.startsWith("http") ? src : new URL(src, origin).href
         )
         .map((src: string) => {
-          // Some frameworks add metadata after the file extension with
-          // a hashtag before it, we need to remove that.
-          const srcSplit = src.split(".");
-          const fileExtension = srcSplit[srcSplit.length - 1];
-          return (
-            srcSplit.slice(0, -1).join(".") + "." + fileExtension.split("#")[0]
-          );
+          return removeFromExtension(src, "#");
         })
     ),
   ];
@@ -40,7 +34,7 @@ export default async function downloadAllImages(
   // Wait to all images to download before continuing
   await Promise.all(
     imageSrcs.map((imageSrc: string) => {
-      const fileName = path.basename(imageSrc);
+      const fileName = removeFromExtension(path.basename(imageSrc), "?");
 
       if (!fileName) {
         console.error("Invalid image path " + imageSrc);
@@ -61,5 +55,17 @@ export default async function downloadAllImages(
           }
         });
     })
+  );
+}
+
+function removeFromExtension(src, dividerSymbol) {
+  // Some frameworks add metadata after the file extension with
+  // a question mark before it, we need to remove that.
+  const srcSplit = src.split(".");
+  const fileExtension = srcSplit[srcSplit.length - 1];
+  return (
+    srcSplit.slice(0, -1).join(".") +
+    "." +
+    fileExtension.split(dividerSymbol)[0]
   );
 }

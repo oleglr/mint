@@ -1,5 +1,6 @@
 import path from "path";
 import axios from "axios";
+import { getHtmlWithPuppeteer } from "../browser.js";
 import { createPage } from "../util.js";
 
 export async function scrapeGettingFileNameFromUrl(
@@ -16,6 +17,7 @@ export async function scrapeGettingFileNameFromUrl(
     description?: string;
     markdown?: string;
   }>,
+  puppeteer = false,
   baseToRemove?: string
 ) {
   // Skip scraping external links
@@ -37,8 +39,15 @@ export async function scrapeGettingFileNameFromUrl(
   const imageBaseDir = path.join(cliDir, "images", folders);
 
   // Scrape each page separately
-  const res = await axios.default.get(new URL(pathname, origin).href);
-  const html = res.data;
+  const href = new URL(pathname, origin).href;
+  let html: string;
+  if (puppeteer) {
+    html = await getHtmlWithPuppeteer(href);
+  } else {
+    const res = await axios.default.get(href);
+    html = res.data;
+  }
+
   const { title, description, markdown } = await scrapePageFunc(
     html,
     origin,

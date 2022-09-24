@@ -68,6 +68,7 @@ export async function scrapeReadMeSection(
             pathname,
             overwrite,
             scrapeReadMePage,
+            false,
             "/docs"
           )
         )

@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import Link from 'next/link';
 import isAbsoluteUrl from 'is-absolute-url';
 import { useRouter } from 'next/router';
@@ -11,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getMethodDotsColor } from '@/utils/brands';
 import { extractMethodAndEndpoint } from '@/utils/api';
 import { PageContext, Group, Groups } from '@/nav';
+import { getGroupsInDivision, getGroupsNotInDivision } from '@/layouts/getGroupsInDivision';
 
 type SidebarContextType = {
   nav: any;
@@ -22,7 +24,7 @@ type SidebarContextType = {
 export const SidebarContext = createContext<SidebarContextType>({
   nav: [],
   navIsOpen: false,
-  setNavIsOpen: () => {}
+  setNavIsOpen: () => {},
 });
 
 const getPaddingByLevel = (level: number) => {
@@ -34,10 +36,10 @@ const getPaddingByLevel = (level: number) => {
     default:
       return 'pl-10';
   }
-}
+};
 
 const NavItem = forwardRef(
-  ({ page, level = 0 }: { page: PageContext | undefined, level?: number }, ref: any) => {
+  ({ page, level = 0 }: { page: PageContext | undefined; level?: number }, ref: any) => {
     const router = useRouter();
 
     if (page == null) {
@@ -45,7 +47,7 @@ const NavItem = forwardRef(
     }
 
     if (page.group && page.pages) {
-      return <GroupDropdown group={page} level={level} />
+      return <GroupDropdown group={page} level={level} />;
     }
 
     const { href, api: pageApi, openapi } = page;
@@ -58,7 +60,8 @@ const NavItem = forwardRef(
       <li ref={ref}>
         <Link href={href || '/'}>
           <a
-            className={clsx('flex border-l -ml-px',
+            className={clsx(
+              'flex border-l -ml-px',
               isActive
                 ? 'text-primary border-current font-semibold dark:text-primary-light'
                 : 'border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300',
@@ -81,7 +84,7 @@ const NavItem = forwardRef(
   }
 );
 
-const GroupDropdown = ({ group, level }: { group: Group, level: number }) => {
+const GroupDropdown = ({ group, level }: { group: Group; level: number }) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { group: name, pages } = group;
@@ -95,26 +98,41 @@ const GroupDropdown = ({ group, level }: { group: Group, level: number }) => {
       // Navigate to the first page if it exists
       router.push(pages[0].href);
     }
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
 
-  return <>
-    <span
-      className={clsx(
+  return (
+    <>
+      <span
+        className={clsx(
           'group flex items-center border-l -ml-px cursor-pointer space-x-3 border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300',
           getPaddingByLevel(level)
-        )
-      }
-      onClick={onClick}
-    >
-      <div>{name}</div>
-      <svg width="3" height="24" viewBox="0 -9 3 24" className={clsx("text-slate-400 overflow-visible group-hover:text-slate-600 dark:text-slate-600 dark:group-hover:text-slate-500", isOpen && 'rotate-90')}>
-        <path d="M0 0L3 3L0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-      </svg>
-    </span>
-    {isOpen && pages.map((subpage) => <NavItem page={subpage} level={level + 1} />)}
-  </>
-}
+        )}
+        onClick={onClick}
+      >
+        <div>{name}</div>
+        <svg
+          width="3"
+          height="24"
+          viewBox="0 -9 3 24"
+          className={clsx(
+            'text-slate-400 overflow-visible group-hover:text-slate-600 dark:text-slate-600 dark:group-hover:text-slate-500',
+            isOpen && 'rotate-90'
+          )}
+        >
+          <path
+            d="M0 0L3 3L0 6"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+      </span>
+      {isOpen && pages.map((subpage) => <NavItem page={subpage} level={level + 1} />)}
+    </>
+  );
+};
 
 function nearestScrollableContainer(el: any) {
   function isScrollable(el: Element) {
@@ -192,11 +210,11 @@ function Nav({ nav, children, mobile = false }: any) {
               return (
                 <li
                   key={i}
-                  className={clsx(
-                    {
-                      'mt-12 lg:mt-8': !Boolean(i === 0 && (config?.anchors == null || config.anchors?.length === 0))
-                    }
-                  )}
+                  className={clsx({
+                    'mt-12 lg:mt-8': !Boolean(
+                      i === 0 && (config?.anchors == null || config.anchors?.length === 0)
+                    ),
+                  })}
                 >
                   <h5 className="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
                     {group}
@@ -208,12 +226,7 @@ function Nav({ nav, children, mobile = false }: any) {
                     )}
                   >
                     {pages.map((page, i: number) => {
-                      return (
-                        <NavItem
-                          key={i}
-                          page={page}
-                        />
-                      );
+                      return <NavItem key={i} page={page} />;
                     })}
                   </ul>
                 </li>
@@ -252,45 +265,47 @@ function TopLevelNav({ mobile }: { mobile: boolean }) {
         {config.topAnchor?.name ?? 'Documentation'}
       </TopLevelLink>
       {config?.anchors &&
-        config.anchors.filter((anchor) => {
-          if (!anchor.isDefaultHidden) {
-            return true;
-          }
-
-          return pathname.startsWith(`/${anchor.url}`);
-        }).map((anchor, i) => {
-          const isAbsolute = isAbsoluteUrl(anchor.url);
-          let href;
-          if (isAbsolute) {
-            href = anchor.url;
-          } else {
-            config.navigation?.every((nav) => {
-              const page = findFirstPage(nav, `${anchor.url}/`);
-              if (page) {
-                if (typeof page === 'string') {
-                  href = `/${page}`;
-                } else {
-                  href = `/${page.pages[0]}`
-                }
-                return false;
-              }
+        config.anchors
+          .filter((anchor) => {
+            if (!anchor.isDefaultHidden) {
               return true;
-            });
-          }
+            }
 
-          return (
-            <StyledTopLevelLink
-              i={i}
-              key={i}
-              mobile={mobile}
-              href={href || '/'}
-              name={anchor?.name}
-              icon={anchor?.icon}
-              color={anchor?.color}
-              isActive={pathname.startsWith(`/${anchor.url}`)}
-            />
-          );
-        })}
+            return pathname.startsWith(`/${anchor.url}`);
+          })
+          .map((anchor, i) => {
+            const isAbsolute = isAbsoluteUrl(anchor.url);
+            let href;
+            if (isAbsolute) {
+              href = anchor.url;
+            } else {
+              config.navigation?.every((nav) => {
+                const page = findFirstPage(nav, `${anchor.url}/`);
+                if (page) {
+                  if (typeof page === 'string') {
+                    href = `/${page}`;
+                  } else {
+                    href = `/${page.pages[0]}`;
+                  }
+                  return false;
+                }
+                return true;
+              });
+            }
+
+            return (
+              <StyledTopLevelLink
+                i={i}
+                key={i}
+                mobile={mobile}
+                href={href || '/'}
+                name={anchor?.name}
+                icon={anchor?.icon}
+                color={anchor?.color}
+                isActive={pathname.startsWith(`/${anchor.url}`)}
+              />
+            );
+          })}
     </>
   );
 }
@@ -305,18 +320,7 @@ function Wrapper({
   return <div className={allowOverflow ? undefined : 'overflow-hidden'}>{children}</div>;
 }
 
-const checkIfPageIsInDivision = (page: any, divisionUrl?: string): boolean => {
-  if (page?.href == null) {
-    return false;
-  }
-
-  return page.href.startsWith(`/${divisionUrl}/`);
-}
-
-const navFilter = (nav: Group, divisionUrl: string) => {
-  return nav.pages.some((page) => checkIfPageIsInDivision(page, divisionUrl));
-}
-// TODO: Add types to this
+// TODO: Set remaining types
 export function SidebarLayout({
   children,
   navIsOpen,
@@ -324,35 +328,36 @@ export function SidebarLayout({
   nav,
   sidebar,
   layoutProps: { allowOverflow = true } = {},
-}: any) {
-  console.log({nav});
+}: {
+  children: ReactNode;
+  navIsOpen: boolean;
+  setNavIsOpen: any;
+  nav: Groups;
+  sidebar: any;
+  layoutProps: any;
+}) {
   const router = useRouter();
   const pathname = router.pathname;
   const currentDivision = config.anchors?.find((anchor) => pathname.startsWith(`/${anchor.url}`));
-  let navForDivision = nav.filter(({ pages }: { pages: Page[] }) => {
-    return pages.some((page) => checkIfPageIsInDivision(page, currentDivision?.url));
-  });
 
-  if (navForDivision.length === 0) { // for base docs
+  let navForDivision = getGroupsInDivision(nav, currentDivision?.url ? [currentDivision?.url] : []);
+
+  if (navForDivision.length === 0) {
+    // for base docs
     const divisions = config.anchors?.filter((anchor) => !isAbsoluteUrl(anchor.url)) || [];
-    if (divisions) {
-      navForDivision = nav.filter(({ pages }: { pages: Page[] }) => {
-        return !pages.some((page) => {
-          return divisions.some((division) => checkIfPageIsInDivision(page, division.url));
-        });
-      });
-    } else {
-      navForDivision = nav;
-    }
+
+    // Everything NOT in an achor
+    navForDivision = getGroupsNotInDivision(
+      nav,
+      divisions.map((division) => division.url)
+    );
   }
   return (
     <SidebarContext.Provider value={{ nav, navIsOpen, setNavIsOpen }}>
       <Wrapper allowOverflow={allowOverflow}>
         <div className="max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
           <div className="hidden lg:block fixed z-20 top-[3.8125rem] bottom-0 left-[max(0px,calc(50%-45rem))] right-auto w-[19.5rem] pb-10 px-8 overflow-y-auto">
-            <Nav nav={navForDivision}>
-              {sidebar}
-            </Nav>
+            <Nav nav={navForDivision}>{sidebar}</Nav>
           </div>
           <div className="lg:pl-[20rem]">{children}</div>
         </div>

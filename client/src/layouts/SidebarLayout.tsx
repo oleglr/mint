@@ -10,7 +10,7 @@ import { StyledTopLevelLink, TopLevelLink } from '../ui/TopLevelLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getMethodDotsColor } from '@/utils/brands';
 import { extractMethodAndEndpoint } from '@/utils/api';
-import { PageContext } from '@/nav';
+import { PageContext, Group, Groups } from '@/nav';
 
 type SidebarContextType = {
   nav: any;
@@ -81,7 +81,7 @@ const NavItem = forwardRef(
   }
 );
 
-const GroupDropdown = ({ group, level }: { group: PageContext, level: number }) => {
+const GroupDropdown = ({ group, level }: { group: Group, level: number }) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { group: name, pages } = group;
@@ -313,6 +313,10 @@ const checkIfPageIsInDivision = (page: any, divisionUrl?: string): boolean => {
   return page.href.startsWith(`/${divisionUrl}/`);
 }
 
+const navFilter = (nav: Group, divisionUrl: string) => {
+  return nav.pages.some((page) => checkIfPageIsInDivision(page, divisionUrl));
+}
+// TODO: Add types to this
 export function SidebarLayout({
   children,
   navIsOpen,
@@ -321,6 +325,7 @@ export function SidebarLayout({
   sidebar,
   layoutProps: { allowOverflow = true } = {},
 }: any) {
+  console.log({nav});
   const router = useRouter();
   const pathname = router.pathname;
   const currentDivision = config.anchors?.find((anchor) => pathname.startsWith(`/${anchor.url}`));
@@ -328,7 +333,7 @@ export function SidebarLayout({
     return pages.some((page) => checkIfPageIsInDivision(page, currentDivision?.url));
   });
 
-  if (navForDivision.length === 0) {
+  if (navForDivision.length === 0) { // for base docs
     const divisions = config.anchors?.filter((anchor) => !isAbsoluteUrl(anchor.url)) || [];
     if (divisions) {
       navForDivision = nav.filter(({ pages }: { pages: Page[] }) => {

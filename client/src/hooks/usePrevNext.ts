@@ -3,16 +3,25 @@ import { SidebarContext } from '@/layouts/SidebarLayout';
 import { useRouter } from 'next/router';
 import { PageContext, GroupPage, isGroup } from '@/nav';
 
-const getFirstNonGroupPage = (group?: GroupPage): PageContext | null => {
-  if (group == null) {
+const getFirstNonGroupPage = (groupPage?: GroupPage): PageContext | null => {
+  if (groupPage == null) {
     return null;
   }
 
-  if (isGroup(group)) {
-    return getFirstNonGroupPage(group.pages[0]);
+  if (isGroup(groupPage)) {
+    return getFirstNonGroupPage(groupPage.pages[0]);
   }
 
-  return group;
+  return groupPage;
+};
+
+const flattenGroupPages = (groupPages: GroupPage[]): PageContext[] => {
+  return groupPages.flatMap((groupPage) => {
+    if (isGroup(groupPage)) {
+      return flattenGroupPages(groupPage.pages);
+    }
+    return groupPage;
+  });
 };
 
 export function usePrevNext() {
@@ -20,7 +29,7 @@ export function usePrevNext() {
   let { nav } = useContext(SidebarContext);
   let pages: PageContext[] = nav.reduce(
     (acc: PageContext[], currentGroup: { pages: PageContext[] }) => {
-      return acc.concat(...currentGroup.pages);
+      return acc.concat(...flattenGroupPages(currentGroup.pages));
     },
     []
   );

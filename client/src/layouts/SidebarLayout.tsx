@@ -332,19 +332,17 @@ function Wrapper({
 
 // TODO: Set remaining types
 export function SidebarLayout({
-  children,
   navIsOpen,
   setNavIsOpen,
   nav,
-  sidebar,
   layoutProps: { allowOverflow = true } = {},
+  children,
 }: {
-  children: ReactNode;
   navIsOpen: boolean;
   setNavIsOpen: any;
   nav: Groups;
-  sidebar: any;
-  layoutProps: any;
+  layoutProps?: any;
+  children: ReactNode;
 }) {
   const router = useRouter();
   const pathname = router.pathname;
@@ -366,7 +364,7 @@ export function SidebarLayout({
       <Wrapper allowOverflow={allowOverflow}>
         <div className="max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
           <div className="hidden lg:block fixed z-20 top-[3.8125rem] bottom-0 left-[max(0px,calc(50%-45rem))] right-auto w-[19.5rem] pb-10 px-8 overflow-y-auto">
-            <Nav nav={navForDivision}>{sidebar}</Nav>
+            <Nav nav={navForDivision} />
           </div>
           <div className="lg:pl-[20rem]">{children}</div>
         </div>
@@ -395,9 +393,7 @@ export function SidebarLayout({
               />
             </svg>
           </button>
-          <Nav nav={navForDivision} mobile={true}>
-            {sidebar}
-          </Nav>
+          <Nav nav={navForDivision} mobile={true} />
         </div>
       </Dialog>
     </SidebarContext.Provider>

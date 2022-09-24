@@ -72,9 +72,7 @@ export default function App(props: any) {
     };
   }, [navIsOpen]);
 
-  const Layout = pageProps?.isMdx ? DocumentationLayout : Fragment;
-
-  let page = {}
+  let page = {};
   documentationNav.forEach((group) => {
     const foundPage = findPageInGroup(group, router.pathname);
     if (foundPage?.title) {
@@ -82,9 +80,8 @@ export default function App(props: any) {
       return;
     }
   });
-  const meta = {...pageProps.meta, ...page};
+  const meta = { ...pageProps.meta, ...page };
   const description = meta.description || `Documentation for ${config.name}`;
-  const layoutProps = { navIsOpen, setNavIsOpen, meta };
   let section = config.navigation?.find((nav) =>
     nav.pages.find((page) => `/${page}` === router.pathname)
   )?.group;
@@ -125,9 +122,14 @@ export default function App(props: any) {
           title={meta.title}
           section={section}
         />
-        <Layout {...layoutProps}>
+        <DocumentationLayout
+          isMdx={pageProps?.isMdx}
+          navIsOpen={navIsOpen}
+          setNavIsOpen={setNavIsOpen}
+          meta={meta}
+        >
           <Component section={section} meta={meta} />
-        </Layout>
+        </DocumentationLayout>
       </SearchProvider>
     </AnalyticsContext.Provider>
   );

@@ -1,5 +1,5 @@
 import { ChevronRightIcon } from '@heroicons/react/solid';
-import { documentationNav } from '@/nav';
+import { documentationNav, isGroup } from '@/nav';
 import Link from 'next/link';
 
 export default function Error() {
@@ -19,7 +19,7 @@ export default function Error() {
           <div className="mt-8">
             <ul className="mt-4 border-l border-slate-100 dark:border-slate-800">
               {documentationNav.slice(0, 3).map((nav) => {
-                if (nav?.pages == null || nav.pages[0] == null) {
+                if (nav?.pages == null || nav.pages[0] == null || isGroup(nav.pages[0])) {
                   return null;
                 }
 
@@ -48,8 +48,8 @@ export default function Error() {
                       </div>
                     </li>
                   </Link>
-                )
-            })}
+                );
+              })}
             </ul>
             <div className="mt-12">
               <Link href="/">

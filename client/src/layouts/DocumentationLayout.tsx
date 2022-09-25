@@ -5,23 +5,43 @@ import { Title } from '@/ui/Title';
 import { documentationNav } from '@/nav';
 import { config } from '@/config';
 import { slugToTitle } from '@/utils/slugToTitle';
+import { ReactNode } from 'react';
 
-export function DocumentationLayout(props: any) {
-  let router = useRouter();
-  let defaultTitle = null;
-  if (props?.layoutProps?.slug != null) {
-    defaultTitle = slugToTitle(props?.layoutProps?.slug);
+export function DocumentationLayout({
+  isMdx,
+  navIsOpen,
+  setNavIsOpen,
+  meta,
+  slug,
+  children,
+}: {
+  isMdx: boolean;
+  navIsOpen: boolean;
+  setNavIsOpen: any;
+  meta: any;
+  slug?: string;
+  children: ReactNode;
+}) {
+  const router = useRouter();
+
+  if (!isMdx) {
+    return <>{children}</>;
   }
+
+  const defaultTitle = slugToTitle(router.pathname);
+
   return (
     <>
       <Title suffix={router.pathname === '/' ? '' : config.name}>
-        {props.meta.sidebarTitle || props.meta.title || defaultTitle}
+        {meta.sidebarTitle || meta.title || defaultTitle}
       </Title>
       <Head>
         <meta key="twitter:card" name="twitter:card" content="summary" />
         <meta key="twitter:image" name="twitter:image" content="/img/favicon/favicon-32x32.png" />
       </Head>
-      <SidebarLayout nav={documentationNav} {...props} />
+      <SidebarLayout nav={documentationNav} navIsOpen={navIsOpen} setNavIsOpen={setNavIsOpen}>
+        {children}
+      </SidebarLayout>
     </>
   );
 }

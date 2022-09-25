@@ -41,7 +41,7 @@ type Analytics = {
   amplitude?: AmplitudeConfigInterface;
   mixpanel?: MixpanelConfigInterface;
   hotjar?: HotjarConfigInterface;
-}
+};
 
 type FooterSocials = Record<string, string>;
 
@@ -69,7 +69,7 @@ export type Config = {
     background?: {
       light: string;
       dark: string;
-    }
+    };
   };
   topbarCtaButton?: {
     name: string;
@@ -85,9 +85,19 @@ export type Config = {
   classes?: {
     anchors?: string;
     activeAnchors?: string;
-  }
+  };
   analytics?: Analytics;
   __injected?: {
     analytics?: Analytics;
   };
+};
+
+export const findFirstPage = (group: Navigation, target: string): Page | undefined => {
+  return group.pages.find((page) => {
+    if (typeof page === 'string') {
+      return page.includes(target);
+    } else {
+      return findFirstPage(page, target);
+    }
+  });
 };

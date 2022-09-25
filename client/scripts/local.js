@@ -5,7 +5,7 @@ import { dirname, resolve } from 'path';
 import faviconConfig from '../prebuild/faviconConfig.js';
 import { promises as _promises } from 'fs';
 import { createPage, injectNav } from '../prebuild/injectNav.js';
-import SwaggerParser from "@apidevtools/swagger-parser";
+import SwaggerParser from '@apidevtools/swagger-parser';
 
 const { outputFileSync, readFileSync, pathExists } = pkg;
 const { readdir, readFile } = _promises;
@@ -56,19 +56,14 @@ const getFiles = async () => {
           return;
         }
 
-        if (extension === "json" || extension === "yaml" || extension === "yml") {
+        if (extension === 'json' || extension === 'yaml' || extension === 'yml') {
           try {
-            outputFileSync(
-              "openapi",
-              Buffer.from(content, "base64").toString("utf-8")
-            );
-            const api = await SwaggerParser.validate("openapi");
-            console.log({api});
-            openApi = Buffer.from(JSON.stringify(api, null, 2), "utf-8");
+            outputFileSync('openapi', Buffer.from(content, 'base64').toString('utf-8'));
+            const api = await SwaggerParser.validate('openapi');
+            openApi = Buffer.from(JSON.stringify(api, null, 2), 'utf-8');
           } catch {
             // not valid openApi
           }
-          
         }
         // every other file
         staticFiles.push({
@@ -90,8 +85,8 @@ const injectMarkdownFilesAndNav = (markdownFiles, configObj, openApiObj) => {
     if (page != null) {
       pages = {
         ...pages,
-        ...page
-      }
+        ...page,
+      };
     }
     outputFileSync(path, Buffer.from(markdownFile.content), { flag: 'w' });
   });
@@ -156,7 +151,7 @@ const injectFavicons = async (config) => {
 const deleteExistingOpenApi = async () => {
   const path = __dirname + '/../openapi';
   await remove(path);
-}
+};
 
 const getAllFilesAndConfig = async () => {
   await deleteExistingOpenApi();

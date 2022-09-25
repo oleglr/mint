@@ -1,7 +1,7 @@
 import '../css/fonts.css';
 import '../css/main.css';
 import 'focus-visible';
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/ui/Header';
 import { Title } from '@/ui/Title';
 import Router from 'next/router';
@@ -75,7 +75,7 @@ export default function App(props: any) {
   let page = {};
   documentationNav.forEach((group) => {
     const foundPage = findPageInGroup(group, router.pathname);
-    if (foundPage?.title) {
+    if (foundPage) {
       page = foundPage;
       return;
     }

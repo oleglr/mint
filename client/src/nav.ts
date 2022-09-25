@@ -26,18 +26,15 @@ export const isGroup = (group: GroupPage): group is Group => {
   return group && group.hasOwnProperty('group') && group.hasOwnProperty('pages');
 };
 
-export const findPageInGroup = (group: Group, targetHref: string): PageContext => {
+export const findPageInGroup = (group: Group, targetHref: string): PageContext | undefined => {
   const { pages } = group;
-  if (pages == null) {
-    return {};
-  }
-  let targetPage: PageContext = {};
+  let targetPage = undefined;
   pages.forEach((page) => {
     const actualPage = page as PageContext;
     const subGroup = page as Group;
     if (actualPage?.href === targetHref) {
       targetPage = actualPage;
-    } else if (subGroup?.group && subGroup?.pages) {
+    } else if (isGroup(subGroup)) {
       const resultInSubGroup = findPageInGroup(subGroup, targetHref);
       if (resultInSubGroup != null) {
         targetPage = resultInSubGroup;

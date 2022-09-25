@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { SidebarContext } from '@/layouts/SidebarLayout';
 import { useRouter } from 'next/router';
-import { PageContext, GroupPage, isGroup } from '@/nav';
+import { PageContext, GroupPage, isGroup, flattenGroupPages } from '@/nav';
 
 const getFirstNonGroupPage = (groupPage?: GroupPage): PageContext | null => {
   if (groupPage == null) {
@@ -13,15 +13,6 @@ const getFirstNonGroupPage = (groupPage?: GroupPage): PageContext | null => {
   }
 
   return groupPage;
-};
-
-const flattenGroupPages = (groupPages: GroupPage[]): PageContext[] => {
-  return groupPages.flatMap((groupPage) => {
-    if (isGroup(groupPage)) {
-      return flattenGroupPages(groupPage.pages);
-    }
-    return groupPage;
-  });
 };
 
 export function usePrevNext() {

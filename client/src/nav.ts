@@ -26,20 +26,32 @@ export const isGroup = (group: GroupPage): group is Group => {
   return group && group.hasOwnProperty('group') && group.hasOwnProperty('pages');
 };
 
-export const findPageInGroup = (group: Group, targetHref: string): PageContext | undefined => {
+export const findPageInGroup = (
+  group: Group,
+  targetHref: string
+): { group: string; page: PageContext } | undefined => {
   const { pages } = group;
-  let targetPage = undefined;
+  let target = undefined;
   pages.forEach((page) => {
     const actualPage = page as PageContext;
     const subGroup = page as Group;
     if (actualPage?.href === targetHref) {
-      targetPage = actualPage;
+      target = { group: group.group, page: actualPage };
     } else if (isGroup(subGroup)) {
       const resultInSubGroup = findPageInGroup(subGroup, targetHref);
       if (resultInSubGroup != null) {
-        targetPage = resultInSubGroup;
+        target = resultInSubGroup;
       }
     }
   });
-  return targetPage;
+  return target;
+};
+
+export const flattenGroupPages = (groupPages: GroupPage[]): PageContext[] => {
+  return groupPages.flatMap((groupPage) => {
+    if (isGroup(groupPage)) {
+      return flattenGroupPages(groupPage.pages);
+    }
+    return groupPage;
+  });
 };

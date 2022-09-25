@@ -72,19 +72,19 @@ export default function App(props: any) {
     };
   }, [navIsOpen]);
 
+  let section = undefined;
   let page = {};
   documentationNav.forEach((group) => {
     const foundPage = findPageInGroup(group, router.pathname);
     if (foundPage) {
-      page = foundPage;
-      return;
+      section = foundPage.group;
+      page = foundPage.page;
+      return false;
     }
+    return true;
   });
   const meta = { ...pageProps.meta, ...page };
   const description = meta.description || `Documentation for ${config.name}`;
-  let section = config.navigation?.find((nav) =>
-    nav.pages.find((page) => `/${page}` === router.pathname)
-  )?.group;
 
   return (
     <AnalyticsContext.Provider value={analyticsMediator}>

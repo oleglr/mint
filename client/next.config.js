@@ -12,7 +12,7 @@ import BundleAnalyzer from '@next/bundle-analyzer';
 import remarkGfm from 'remark-gfm';
 import withStaticProps from './rehype/withStaticProps.js';
 import withApiComponents from './rehype/withApiComponents.js';
-import mintConfig from './src/config.json' assert { type: "json" };
+import mintConfig from './src/config.json' assert { type: 'json' };
 import withSyntaxHighlighting from './rehype/withSyntaxHighlighting.js';
 
 const withBundleAnalyzer = BundleAnalyzer({
@@ -82,18 +82,18 @@ export default withSentryConfig(
                 withImportsInjected,
                 withFrames,
                 withNextLinks,
-                withSmartypants
+                withSmartypants,
               ],
               rehypePlugins: [
                 [
                   withSyntaxHighlighting,
                   {
-                    ignoreMissing: true
-                  }
+                    ignoreMissing: true,
+                  },
                 ],
                 withCodeBlocks,
-                withLinkRoles
-              ]
+                withLinkRoles,
+              ],
             },
           },
         ],
@@ -119,8 +119,8 @@ export default withSentryConfig(
                 [
                   withSyntaxHighlighting,
                   {
-                    ignoreMissing: true
-                  }
+                    ignoreMissing: true,
+                  },
                 ],
                 withCodeBlocks,
                 withLinkRoles,
@@ -130,14 +130,15 @@ export default withSentryConfig(
                   `{
                     meta,
                     isMdx: true
-                  }`
-                ]
+                  }`,
+                ],
               ],
             },
           },
           createLoader(function (source) {
             // Get meta fields from query
-            const query = new URLSearchParams(this.resourceQuery.substr(1)).get('meta') ?? undefined;
+            const query =
+              new URLSearchParams(this.resourceQuery.substr(1)).get('meta') ?? undefined;
             const { attributes: meta, body } = frontMatter(source);
             if (query) {
               for (let field in meta) {
@@ -152,7 +153,9 @@ export default withSentryConfig(
             if (!/^\s*export\s+default\s+/m.test(source.replace(/```(.*?)```/gs, ''))) {
               extra.push(
                 `import { ContentsLayout as _Default } from '@/layouts/ContentsLayout'`,
-                `export default (props) => <_Default meta={${JSON.stringify(meta)}} {...props} tableOfContents={tableOfContents} apiComponents={apiComponents}>{props.children}</_Default>`
+                `export default (props) => <_Default meta={${JSON.stringify(
+                  meta
+                )}} {...props} tableOfContents={tableOfContents} apiComponents={apiComponents}>{props.children}</_Default>`
               );
             }
 
@@ -165,11 +168,11 @@ export default withSentryConfig(
               typeof query === 'undefined'
                 ? body.replace(/<!--excerpt-->.*<!--\/excerpt-->/s, '')
                 : '',
-                metaExport,
-              ]
+              metaExport,
+            ]
               .filter(Boolean)
               .join('\n\n');
-          })
+          }),
         ],
       });
       return config;

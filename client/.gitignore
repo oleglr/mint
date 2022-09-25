@@ -17,6 +17,7 @@
 /build
 
 # generated files
+openapi
 /public/*
 /src/pages/*
 !/src/pages/api
@@ -41,5 +42,6 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
 # Sentry
 .sentryclirc

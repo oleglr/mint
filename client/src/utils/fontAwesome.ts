@@ -32,7 +32,8 @@ import {
   faBell,
   faUserShield,
   faCreditCard,
-  faFileShield
+  faFileShield,
+  faTags,
 } from '@fortawesome/pro-duotone-svg-icons';
 import { faEarthAmericas } from '@fortawesome/pro-solid-svg-icons';
 import {
@@ -88,6 +89,7 @@ library.add(
   faUserShield,
   faCreditCard,
   faFileShield,
+  faTags,
   // Solids
   faEarthAmericas,
   // Brands

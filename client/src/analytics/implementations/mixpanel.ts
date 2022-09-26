@@ -1,5 +1,5 @@
-import { AnalyticsInterface, ConfigInterface } from '@/analytics/AnalyticsInterface';
 import * as Sentry from '@sentry/nextjs';
+import { AnalyticsInterface, ConfigInterface } from '@/analytics/AnalyticsInterface';
 
 export default class MixpanelAnalytics implements AnalyticsInterface {
   initialized = false;

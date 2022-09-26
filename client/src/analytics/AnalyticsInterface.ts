@@ -1,26 +1,31 @@
-export type PostHogConfigInterface = {
-  apiKey?: string;
-  apiHost?: string;
-};
-
 export type AmplitudeConfigInterface = {
   apiKey?: string;
+};
+
+export type FathomConfigInterface = {
+  siteId?: string;
+};
+
+export type HotjarConfigInterface = {
+  hjid?: string;
+  hjsv?: string;
 };
 
 export type MixpanelConfigInterface = {
   projectToken?: string;
 };
 
-export type HotjarConfigInterface = {
-  hjid?: string;
-  hjsv?: string;
-}
+export type PostHogConfigInterface = {
+  apiKey?: string;
+  apiHost?: string;
+};
 
 // We can use & instead of | because all keys are optional
-export type ConfigInterface = PostHogConfigInterface &
-  AmplitudeConfigInterface &
+export type ConfigInterface = AmplitudeConfigInterface &
+  FathomConfigInterface &
+  HotjarConfigInterface &
   MixpanelConfigInterface &
-  HotjarConfigInterface;
+  PostHogConfigInterface;
 
 // TypeScript doesn't recommend setting interfaces on constructors.
 // How an object is constructed should not matter because an interface

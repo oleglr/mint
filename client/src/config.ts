@@ -1,5 +1,6 @@
 import {
   AmplitudeConfigInterface,
+  FathomConfigInterface,
   HotjarConfigInterface,
   MixpanelConfigInterface,
   PostHogConfigInterface,
@@ -37,10 +38,11 @@ type FooterSocial = {
 };
 
 type Analytics = {
-  posthog?: PostHogConfigInterface;
   amplitude?: AmplitudeConfigInterface;
-  mixpanel?: MixpanelConfigInterface;
+  fathom?: FathomConfigInterface;
   hotjar?: HotjarConfigInterface;
+  mixpanel?: MixpanelConfigInterface;
+  posthog?: PostHogConfigInterface;
 };
 
 type FooterSocials = Record<string, string>;

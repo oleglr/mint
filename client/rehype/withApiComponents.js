@@ -1,7 +1,7 @@
-import {filter} from 'unist-util-filter';
+import { filter } from 'unist-util-filter';
 import visit from 'unist-util-visit';
 import { addExport } from '../remark/utils.js';
-import {toHtml} from 'hast-util-to-html';
+import { toHtml } from 'hast-util-to-html';
 
 const langFilename = (className) => {
   switch (className) {
@@ -10,47 +10,50 @@ const langFilename = (className) => {
     case 'language-json':
       return 'JSON';
     case 'language-js':
-      return 'JavaScript'
+      return 'JavaScript';
     default:
       const language = className.substring(9);
       return language.charAt(0).toUpperCase() + language.slice(1);
   }
-}
+};
 const withApiComponents = () => {
   return (tree) => {
     let apiComponents = [];
     visit(tree, 'mdxJsxFlowElement', (node) => {
-      if(['ResponseExample', 'RequestExample'].includes(node.name)) {
+      if (['ResponseExample', 'RequestExample'].includes(node.name)) {
         // remove all jsx components to convert to html (removes <ResponseExample> and <Editor>)
         const children = node.children.map((child, i) => {
           const preComponent = child.children[0];
           const html = toHtml(preComponent);
-          let filename =  preComponent?.properties?.className?.length > 1 ? langFilename(preComponent?.properties?.className[0]) : '';
+          let filename =
+            preComponent?.properties?.className?.length > 1
+              ? langFilename(preComponent?.properties?.className[0])
+              : '';
           if (child?.attributes && child.attributes.length > 0) {
             filename = child.attributes[0]?.value;
           }
           return {
             filename,
-            html
-          }
+            html,
+          };
         });
         apiComponents.push({
           type: node.name,
-          children
-        })
+          children,
+        });
       }
 
       if (node.name === 'Param' || node.name === 'ParamField') {
         apiComponents.push({
           type: 'ParamField',
           children: node.children,
-          attributes: node.attributes
-        })
+          attributes: node.attributes,
+        });
       }
     });
     addExport(tree, 'apiComponents', apiComponents);
-    return filter(tree, node => !['ResponseExample', 'RequestExample'].includes(node.name));
-  }
-}
+    return filter(tree, (node) => !['ResponseExample', 'RequestExample'].includes(node.name));
+  };
+};
 
 export default withApiComponents;

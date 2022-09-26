@@ -1,4 +1,3 @@
-
 import visit from 'unist-util-visit';
 import { toString } from 'hast-util-to-string';
 import { refractor } from 'refractor';
@@ -32,9 +31,7 @@ const withSyntaxHighlighting = (options) => {
 
     let result;
     try {
-      parent.properties.className = (parent.properties.className || []).concat(
-        'language-' + lang
-      );
+      parent.properties.className = (parent.properties.className || []).concat('language-' + lang);
       result = refractor.highlight(toString(node), lang);
       node.children = result.children;
     } catch (err) {

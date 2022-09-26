@@ -14,12 +14,12 @@ const withStaticProps = (map) => {
           }`,
           {
             sourceType: 'module',
-            ecmaVersion: 2020
-          },
+            ecmaVersion: 2020,
+          }
         ),
       },
-    })
-  }
+    });
+  };
 };
 
 export default withStaticProps;

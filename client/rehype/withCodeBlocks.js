@@ -1,6 +1,7 @@
 import { fromHtml } from 'hast-util-from-html';
-import { addImport } from '../remark/utils.js';
 import visit from 'unist-util-visit';
+
+import { addImport } from '../remark/utils.js';
 
 const withCodeBlocks = () => {
   return (tree) => {

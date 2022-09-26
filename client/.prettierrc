@@ -8,5 +8,7 @@
   "quoteProps": "as-needed",
   "jsxSingleQuote": false,
   "bracketSpacing": true,
-  "bracketSameLine": false
+  "bracketSameLine": false,
+  "importOrder": ["<THIRD_PARTY_MODULES>", "^[./]"],
+  "importOrderSeparation": true
 }

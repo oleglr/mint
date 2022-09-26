@@ -104,6 +104,9 @@
   "analytics": {
     "posthog": {
       "apiKey": "phc_TXdpocbGVeZVm5VJmAsHTMrCofBQu3e0kN8HGMNGTVW"
+    },
+    "fathom": {
+      "siteId": "YSVUHCAK"
     }
   }
 }

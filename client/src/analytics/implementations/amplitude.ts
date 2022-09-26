@@ -1,7 +1,10 @@
 import { init as amplitudeInit, track } from '@amplitude/analytics-browser';
-import { AnalyticsInterface, ConfigInterface } from '@/analytics/AnalyticsInterface';
+import {
+  AbstractAnalyticsImplementation,
+  ConfigInterface,
+} from '@/analytics/AbstractAnalyticsImplementation';
 
-export default class AmplitudeAnalytics implements AnalyticsInterface {
+export default class AmplitudeAnalytics extends AbstractAnalyticsImplementation {
   initialized = false;
 
   init(implementationConfig: ConfigInterface) {

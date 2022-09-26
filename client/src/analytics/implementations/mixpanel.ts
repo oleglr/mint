@@ -1,7 +1,10 @@
 import * as Sentry from '@sentry/nextjs';
-import { AnalyticsInterface, ConfigInterface } from '@/analytics/AnalyticsInterface';
+import {
+  AbstractAnalyticsImplementation,
+  ConfigInterface,
+} from '@/analytics/AbstractAnalyticsImplementation';
 
-export default class MixpanelAnalytics implements AnalyticsInterface {
+export default class MixpanelAnalytics extends AbstractAnalyticsImplementation {
   initialized = false;
 
   // Store events to submit after the library is loaded.
@@ -29,8 +32,6 @@ export default class MixpanelAnalytics implements AnalyticsInterface {
               this.mixpanel.track(event.name, event.properties);
             });
           }
-
-          return this.mixpanel;
         })
         .catch((e: any) => {
           Sentry.captureException(e);

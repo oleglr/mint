@@ -1,13 +1,13 @@
 import * as Sentry from '@sentry/nextjs';
 import {
   AmplitudeConfigInterface,
-  AnalyticsInterface,
+  AbstractAnalyticsImplementation,
   AnalyticsMediatorInterface,
   FathomConfigInterface,
   HotjarConfigInterface,
   MixpanelConfigInterface,
   PostHogConfigInterface,
-} from '@/analytics/AnalyticsInterface';
+} from '@/analytics/AbstractAnalyticsImplementation';
 import PostHogAnalytics from '@/analytics/implementations/posthog';
 import AmplitudeAnalytics from './implementations/amplitude';
 import MixpanelAnalytics from './implementations/mixpanel';
@@ -23,7 +23,7 @@ export type AnalyticsMediatorConstructorInterface = {
 };
 
 export default class AnalyticsMediator implements AnalyticsMediatorInterface {
-  analyticsIntegrations: AnalyticsInterface[] = [];
+  analyticsIntegrations: AbstractAnalyticsImplementation[] = [];
 
   constructor(analytics?: AnalyticsMediatorConstructorInterface) {
     // Ran first so we can assign the Sentry tags to false when not set.
@@ -80,5 +80,9 @@ export default class AnalyticsMediator implements AnalyticsMediatorInterface {
     return async function (eventConfig: object) {
       listeners.forEach((listener) => listener(eventConfig));
     };
+  }
+
+  onRouteChange(url: string, routeProps: any) {
+    this.analyticsIntegrations.forEach((integration) => integration.onRouteChange(url, routeProps));
   }
 }

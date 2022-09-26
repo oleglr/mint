@@ -1,29 +1,27 @@
-import Router from 'next/router';
 import * as Sentry from '@sentry/nextjs';
-import { AnalyticsInterface, ConfigInterface } from '@/analytics/AnalyticsInterface';
+import {
+  AbstractAnalyticsImplementation,
+  ConfigInterface,
+} from '@/analytics/AbstractAnalyticsImplementation';
 
-export default class FathomAnalytics implements AnalyticsInterface {
+export default class FathomAnalytics extends AbstractAnalyticsImplementation {
   initialized = false;
-  fathom: any;
+  trackPageview: any;
 
   init(implementationConfig: ConfigInterface) {
     if (implementationConfig.siteId && process.env.NODE_ENV === 'production') {
       import('fathom-client')
         .then((_fathom) => {
           if (!this.initialized) {
-            // Get default module export
-            const fathomLib = _fathom.default;
-            fathomLib.load(implementationConfig.siteId!);
+            _fathom.load(implementationConfig.siteId!);
+
+            // The Fathom library uses asterisk imports (ie. * as Fathom)
+            // so there is no default export for us to store a reference to.
+            // Instead, we keep a reference to the method we need.
+            this.trackPageview = _fathom.trackPageview;
 
             this.initialized = true;
-            this.fathom = fathomLib;
-
-            // Track page views
-            const handleRouteChange = () => this.fathom.trackPageview();
-            Router.events.on('routeChangeComplete', handleRouteChange);
           }
-
-          return this.fathom;
         })
         .catch((e: any) => {
           Sentry.captureException(e);
@@ -31,8 +29,9 @@ export default class FathomAnalytics implements AnalyticsInterface {
     }
   }
 
-  createEventListener(eventName: string) {
-    // Sept 2022: Fathom tracks goals not custom events. Future versions of Fathom may improve this.
-    return async function doNothing(_: object) {};
+  onRouteChange(url: string, routeProps: any) {
+    if (this.trackPageview && !routeProps.shallow) {
+      this.trackPageview();
+    }
   }
 }

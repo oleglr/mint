@@ -30,13 +30,16 @@ export type ConfigInterface = AmplitudeConfigInterface &
 // TypeScript doesn't recommend setting interfaces on constructors.
 // How an object is constructed should not matter because an interface
 // only cares about what it does.
-export type AnalyticsInterface = {
+export abstract class AbstractAnalyticsImplementation {
   // New implementations need their own config interface.
-  init: (implementationConfig: ConfigInterface) => void;
-
-  createEventListener: (eventName: string) => (eventProperties: object) => void;
-};
+  abstract init(implementationConfig: ConfigInterface): void;
+  createEventListener(eventName: string): (eventProperties: object) => Promise<void> {
+    return async function doNothing(_: object) {};
+  }
+  onRouteChange(url: string, routeProps: any): void {}
+}
 
 export type AnalyticsMediatorInterface = {
   createEventListener: (eventName: string) => (eventConfig: object) => Promise<void>;
+  onRouteChange: (url: string, routeProps: any) => void;
 };

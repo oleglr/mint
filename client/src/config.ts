@@ -4,7 +4,7 @@ import {
   HotjarConfigInterface,
   MixpanelConfigInterface,
   PostHogConfigInterface,
-} from './analytics/AnalyticsInterface';
+} from './analytics/AbstractAnalyticsImplementation';
 import configJSON from './config.json';
 
 export const config: Config = configJSON;

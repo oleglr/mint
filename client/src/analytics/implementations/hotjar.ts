@@ -1,7 +1,10 @@
 import * as Sentry from '@sentry/nextjs';
-import { AnalyticsInterface, ConfigInterface } from '@/analytics/AnalyticsInterface';
+import {
+  AbstractAnalyticsImplementation,
+  ConfigInterface,
+} from '@/analytics/AbstractAnalyticsImplementation';
 
-export default class HotjarAnalytics implements AnalyticsInterface {
+export default class HotjarAnalytics extends AbstractAnalyticsImplementation {
   initialized = false;
 
   // Store events to submit after the library is loaded.

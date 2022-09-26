@@ -1,8 +1,11 @@
 import Router from 'next/router';
 import posthog from 'posthog-js';
-import { AnalyticsInterface, ConfigInterface } from '@/analytics/AnalyticsInterface';
+import {
+  AbstractAnalyticsImplementation,
+  ConfigInterface,
+} from '@/analytics/AbstractAnalyticsImplementation';
 
-export default class PostHogAnalytics implements AnalyticsInterface {
+export default class PostHogAnalytics extends AbstractAnalyticsImplementation {
   initialized = false;
 
   init(implementationConfig: ConfigInterface) {

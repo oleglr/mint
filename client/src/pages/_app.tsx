@@ -16,7 +16,7 @@ import getAnalyticsConfig from '@/utils/getAnalyticsConfig';
 import AnalyticsMediator from '@/analytics/AnalyticsMediator';
 import AnalyticsContext from '@/analytics/AnalyticsContext';
 import FakeAnalyticsMediator from '@/analytics/FakeAnalyticsMediator';
-import { AnalyticsMediatorInterface } from '@/analytics/AnalyticsInterface';
+import { AnalyticsMediatorInterface } from '@/analytics/AbstractAnalyticsImplementation';
 import { DocumentationLayout } from '@/layouts/DocumentationLayout';
 import { documentationNav, findPageInGroup } from '@/nav';
 
@@ -60,6 +60,12 @@ export default function App(props: any) {
   }, [initializedAnalyticsMediator]);
 
   let [navIsOpen, setNavIsOpen] = useState(false);
+
+  useEffect(() => {
+    Router.events.on('routeChangeComplete', (url: string, routeProps: any) => {
+      analyticsMediator.onRouteChange(url, routeProps);
+    });
+  }, [analyticsMediator]);
 
   useEffect(() => {
     if (!navIsOpen) return;

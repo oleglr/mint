@@ -1,9 +1,10 @@
 import {
   AmplitudeConfigInterface,
+  FathomConfigInterface,
   HotjarConfigInterface,
   MixpanelConfigInterface,
   PostHogConfigInterface,
-} from './analytics/AnalyticsInterface';
+} from './analytics/AbstractAnalyticsImplementation';
 import configJSON from './config.json';
 
 export const config: Config = configJSON;
@@ -37,10 +38,11 @@ type FooterSocial = {
 };
 
 type Analytics = {
-  posthog?: PostHogConfigInterface;
   amplitude?: AmplitudeConfigInterface;
-  mixpanel?: MixpanelConfigInterface;
+  fathom?: FathomConfigInterface;
   hotjar?: HotjarConfigInterface;
+  mixpanel?: MixpanelConfigInterface;
+  posthog?: PostHogConfigInterface;
 };
 
 type FooterSocials = Record<string, string>;

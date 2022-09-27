@@ -263,7 +263,6 @@ function TopLevelNav({ mobile }: { mobile: boolean }) {
         isActive={isRootAnchorActive}
         className="mb-4"
         shadow="group-hover:shadow-primary-ultralight dark:group-hover:bg-primary"
-        activeBackground="bg-primary"
         icon={
           <FontAwesomeIcon
             className={clsx(

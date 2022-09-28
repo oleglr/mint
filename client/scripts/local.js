@@ -1,13 +1,14 @@
-import favicons from 'favicons';
-import pkg, { remove } from 'fs-extra';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-import faviconConfig from '../prebuild/faviconConfig.js';
-import { promises as _promises } from 'fs';
-import { createPage, injectNav } from '../prebuild/injectNav.js';
 import SwaggerParser from '@apidevtools/swagger-parser';
+import favicons from 'favicons';
+import { promises as _promises } from 'fs';
+import pkg, { remove } from 'fs-extra';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
-const { outputFileSync, readFileSync, pathExists } = pkg;
+import faviconConfig from '../prebuild/faviconConfig.js';
+import { createPage, injectNav } from '../prebuild/injectNav.js';
+
+const { outputFileSync, readFileSync } = pkg;
 const { readdir, readFile } = _promises;
 
 const path = process.argv[2] ?? '../docs';

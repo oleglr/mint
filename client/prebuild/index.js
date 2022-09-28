@@ -1,9 +1,10 @@
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import axios from 'axios';
 import favicons from 'favicons';
 import fs from 'fs-extra';
-import axios from 'axios';
+import { dirname } from 'path';
 import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+
 import faviconConfig from './faviconConfig.js';
 import { createPage, injectNav } from './injectNav.js';
 
@@ -20,10 +21,10 @@ const injectMarkdownFilesAndNav = (markdownFiles, openApiObj, configObj) => {
     if (page != null) {
       pages = {
         ...pages,
-        ...page
-      }
+        ...page,
+      };
     }
-    
+
     fs.outputFileSync(path, Buffer.from(markdownFile.content), { flag: 'w' });
   });
 
@@ -95,8 +96,8 @@ const getAllFilesAndConfig = async () => {
   } = await axios.get(`${API_ENDPOINT}/api/v1/sites/files`, {
     headers: { Authorization: `Bearer ${process.env.INTERNAL_SITE_BEARER_TOKEN}` },
     params: {
-      ref
-    }
+      ref,
+    },
   });
   const openApiObj = await injectOpenApi(openApi);
   const configObj = await injectConfig(config);

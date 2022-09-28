@@ -62,7 +62,7 @@ export type Config = {
       name?: string;
     };
   };
-  metaData?: any;
+  metadata?: any;
   colors?: {
     primary: string;
     light?: string;

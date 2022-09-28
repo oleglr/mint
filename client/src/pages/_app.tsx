@@ -91,9 +91,10 @@ export default function App(props: any) {
     }
     return true;
   });
-  const metaTags = meta;
-  nonMetaTags.forEach((nonMetaTag) => {
-    delete metaTags[nonMetaTag as keyof PageContext];
+  const metaTags: PageContext = {};
+  Object.entries(metaTags).forEach(([key, value]) => {
+    if (nonMetaTags.includes(key)) return;
+    metaTags[key as keyof PageContext] = value;
   });
   return (
     <AnalyticsContext.Provider value={analyticsMediator}>

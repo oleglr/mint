@@ -100,8 +100,8 @@ export default function App(props: any) {
     <AnalyticsContext.Provider value={analyticsMediator}>
       <Title suffix={config.name}>{meta.sidebarTitle || meta.title}</Title>
       <Head>
-        {config?.metaData &&
-          Object.entries(config?.metaData).map(([key, value]) => {
+        {config?.metadata &&
+          Object.entries(config?.metadata).map(([key, value]) => {
             if (!value) {
               return null;
             }

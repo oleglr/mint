@@ -1,4 +1,4 @@
-import { addImportString } from "./utils.js";
+import { addImportString } from './utils.js';
 
 const imports = `
 import { Accordion, AccordionGroup } from '@/components/Accordion'
@@ -13,12 +13,12 @@ import { ResponseField } from '@/components/ResponseField'
 import { Expandable } from '@/components/Expandable'
 import { CardGroup } from '@mintlify/components'
 import { Tabs, Tab } from '@mintlify/components'
+import { Tooltip } from '@mintlify/components'
 import { solid, regular, light, thin, duotone, brands } from '@fortawesome/fontawesome-svg-core/import.macro'
 `;
 
 const withImportsInjected = () => {
   return (tree) => {
-
     tree.children = tree.children.filter((node) => {
       return (
         (node.type === 'import' && !node.value?.includes('@/components/')) || node.type !== 'import'
@@ -31,7 +31,6 @@ const withImportsInjected = () => {
       .forEach((importLine) => {
         addImportString(tree, importLine);
       });
-
   };
 };
 

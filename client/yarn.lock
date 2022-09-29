@@ -1833,10 +1833,10 @@
     "@types/mdx" "^2.0.0"
     "@types/react" ">=16"
 
-"@mintlify/components@^0.1.18":
-  version "0.1.18"
-  resolved "https://registry.yarnpkg.com/@mintlify/components/-/components-0.1.18.tgz#9d1848b53fcd410c643f44e62c529192e49a4e60"
-  integrity sha512-Hm6yCSPGe5xXNGsJP4SJ2UT3IV0oHSfIUOLIoZqOyrCawvsBxSsuAgH+c374wdqFfllQMGI4OzLOgx5YJTY1rg==
+"@mintlify/components@^0.1.20":
+  version "0.1.20"
+  resolved "https://registry.yarnpkg.com/@mintlify/components/-/components-0.1.20.tgz#b88a4e863bdd7b959e55615164d671a78365aaa9"
+  integrity sha512-UOCsgRaFo5NtD7V4k7ndzrptJwbhb9f03VMTxuNKwnux3cfo5CDzBa0Pgh9ByhmdQFjBg6i2kWdvJ4c+D1Qe7A==
   dependencies:
     "@fortawesome/fontawesome-svg-core" "^6.2.0"
     "@fortawesome/react-fontawesome" "^0.2.0"

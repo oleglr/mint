@@ -178,11 +178,18 @@ export function ContentsLayout(props: any) {
   const hasApiSupplementalComponents = apiComponents.some(
     (component: any) => component.type === 'ResponseExample' || component.type === 'RequestExample'
   );
+
+  const isWideSize = meta.size === 'wide';
+
   return (
     <div
       className={clsx(
         'relative max-w-3xl mx-auto pt-10 xl:max-w-none xl:ml-0',
-        hasApiSupplementalComponents ? 'xl:pr-12 xl:mr-[28rem]' : 'xl:pr-20 xl:mr-[18rem]'
+        hasApiSupplementalComponents
+          ? 'xl:pr-12 xl:mr-[28rem]'
+          : isWideSize
+          ? 'xl:pr-20 xl:mr-[12rem]'
+          : 'xl:pr-20 xl:mr-[18rem]'
       )}
     >
       <PageHeader
@@ -212,7 +219,7 @@ export function ContentsLayout(props: any) {
             : 'fixed pl-8 w-[21rem] top-[3.8rem] bottom-0 right-[max(0px,calc(50%-45rem))] py-10 overflow-auto'
         )}
       >
-        {!hasApiSupplementalComponents && toc.length > 0 && (
+        {!hasApiSupplementalComponents && toc.length > 0 && !isWideSize && (
           <TableOfContents tableOfContents={toc} currentSection={currentSection} meta={meta} />
         )}
         {hasApiSupplementalComponents && (

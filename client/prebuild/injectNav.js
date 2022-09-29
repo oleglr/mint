@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export const createPage = (path, content, openApiObj) => {
-  const slug = path.replace(/\.mdx$/, '');
+  const slug = path.replace(/\.mdx?$/, '');
   let defaultTitle = slugToTitle(slug);
   const fileContents = Buffer.from(content).toString();
   const { data } = matter(fileContents);

@@ -90,6 +90,7 @@ export type Config = {
     activeAnchors?: string;
     topbarCtaButton?: string;
   };
+  backgroundImage?: string;
   analytics?: Analytics;
   __injected?: {
     analytics?: Analytics;

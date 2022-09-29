@@ -1,4 +1,5 @@
 import NextDocument, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
+
 import { config } from '@/config';
 
 const FAVICON_VERSION = 3;
@@ -40,7 +41,13 @@ export default class Document extends NextDocument {
             }}
           />
         </Head>
-        <body className="antialiased bg-background-light dark:bg-background-dark text-slate-500 dark:text-slate-400">
+        <body
+          className="antialiased bg-background-light dark:bg-background-dark text-slate-500 dark:text-slate-400"
+          // Add background image
+          {...(config.backgroundImage && {
+            style: { background: `url('${config.backgroundImage}') no-repeat fixed right` },
+          })}
+        >
           <Main />
           <NextScript />
         </body>

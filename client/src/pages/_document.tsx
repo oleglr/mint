@@ -45,7 +45,7 @@ export default class Document extends NextDocument {
           className="antialiased bg-background-light dark:bg-background-dark text-slate-500 dark:text-slate-400"
           // Add background image
           {...(config.backgroundImage && {
-            style: { background: `url('${config.backgroundImage}') no-repeat fixed right` },
+            style: { background: `url('${config.backgroundImage}') no-repeat fixed top right` },
           })}
         >
           <Main />

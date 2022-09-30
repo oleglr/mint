@@ -1,18 +1,20 @@
-import { ReactNode } from 'react';
-import Link from 'next/link';
-import isAbsoluteUrl from 'is-absolute-url';
-import { useRouter } from 'next/router';
-import { createContext, forwardRef, useRef, useState } from 'react';
-import { useIsomorphicLayoutEffect } from '@/hooks/useIsomorphicLayoutEffect';
-import clsx from 'clsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog } from '@headlessui/react';
+import clsx from 'clsx';
+import isAbsoluteUrl from 'is-absolute-url';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ReactNode } from 'react';
+import { createContext, forwardRef, useRef, useState } from 'react';
+
+import { useIsomorphicLayoutEffect } from '@/hooks/useIsomorphicLayoutEffect';
+import { getGroupsInDivision, getGroupsNotInDivision } from '@/layouts/getGroupsInDivision';
+import { PageContext, Group, Groups, GroupPage, isGroup } from '@/nav';
+import { extractMethodAndEndpoint } from '@/utils/api';
+import { getMethodDotsColor } from '@/utils/brands';
+
 import { config, findFirstPage } from '../config';
 import { StyledTopLevelLink, TopLevelLink } from '../ui/TopLevelLink';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getMethodDotsColor } from '@/utils/brands';
-import { extractMethodAndEndpoint } from '@/utils/api';
-import { PageContext, Group, Groups, GroupPage, isGroup } from '@/nav';
-import { getGroupsInDivision, getGroupsNotInDivision } from '@/layouts/getGroupsInDivision';
 import isPathInGroupPages from './isPathInGroupPages';
 
 type SidebarContextType = {
@@ -66,7 +68,8 @@ const NavItem = forwardRef(
               isActive
                 ? 'text-primary border-current font-semibold dark:text-primary-light'
                 : 'border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300',
-              getPaddingByLevel(level)
+              getPaddingByLevel(level),
+              config.classes?.navigationItem
             )}
           >
             {api && (

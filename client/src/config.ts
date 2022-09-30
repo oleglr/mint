@@ -89,6 +89,7 @@ export type Config = {
     anchors?: string;
     activeAnchors?: string;
     topbarCtaButton?: string;
+    navigationItem?: string;
   };
   backgroundImage?: string;
   analytics?: Analytics;

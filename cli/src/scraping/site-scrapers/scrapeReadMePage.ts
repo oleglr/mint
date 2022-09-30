@@ -1,12 +1,13 @@
-import axios from "axios";
 import cheerio from "cheerio";
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import downloadAllImages from "../downloadAllImages.js";
+import replaceImagePaths from "../replaceImagePaths.js";
 
 export async function scrapeReadMePage(
   html: string,
   origin: string,
-  imageBaseDir?: string
+  cliDir: string,
+  imageBaseDir: string
 ) {
   const $ = cheerio.load(html);
 
@@ -23,7 +24,12 @@ export async function scrapeReadMePage(
   }
   const contentHtml = content.html();
 
-  await downloadAllImages($, content, origin, imageBaseDir);
+  const origToWritePath = await downloadAllImages(
+    $,
+    content,
+    origin,
+    imageBaseDir
+  );
 
   const nhm = new NodeHtmlMarkdown();
   let markdown = nhm.translate(contentHtml);
@@ -42,6 +48,8 @@ export async function scrapeReadMePage(
 
   // Mintlify doesn't support bolded headers, remove the asterisks
   markdown = markdown.replace(/(\n#+) \*\*(.*)\*\*\n/g, "$1 $2\n");
+
+  markdown = replaceImagePaths(origToWritePath, cliDir, markdown);
 
   return { title, description, markdown };
 }

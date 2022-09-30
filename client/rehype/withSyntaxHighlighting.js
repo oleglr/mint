@@ -2,10 +2,12 @@ import { toString } from 'hast-util-to-string';
 import { refractor } from 'refractor';
 import docker from 'refractor/lang/docker.js';
 import jsx from 'refractor/lang/jsx.js';
+import protobuf from 'refractor/lang/protobuf.js';
 import visit from 'unist-util-visit';
 
 refractor.register(jsx);
 refractor.register(docker);
+refractor.register(protobuf);
 
 const withSyntaxHighlighting = (options) => {
   options = options || {};

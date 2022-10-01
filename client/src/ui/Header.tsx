@@ -245,7 +245,7 @@ export function Header({
                     }}
                   >
                     <span className="sr-only">{config.name} home page</span>
-                    <Logo className="w-auto h-7 relative" />
+                    <Logo />
                   </a>
                 </Link>
               </div>

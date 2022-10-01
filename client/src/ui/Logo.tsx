@@ -1,8 +1,10 @@
-import Image from 'next/image';
-import { config } from '@/config';
 import clsx from 'clsx';
+import Image from 'next/image';
 
-export function Logo({ className }: { className: string }) {
+import { config } from '@/config';
+
+export function Logo() {
+  const className = clsx('w-auto h-7 relative', config.classes?.logo);
   if (typeof config.logo === 'object' && config.logo !== null) {
     return (
       <>

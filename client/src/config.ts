@@ -19,9 +19,12 @@ export type Navigation = {
 type Logo = string | { light: string; dark: string };
 
 type NavbarLink = {
-  name: string;
   url: string;
+  type?: 'github' | 'link' | string;
+  name?: string;
 };
+
+export type TopbarCta = NavbarLink;
 
 type Anchor = {
   name: string;
@@ -74,10 +77,7 @@ export type Config = {
       dark: string;
     };
   };
-  topbarCtaButton?: {
-    name: string;
-    url: string;
-  };
+  topbarCtaButton?: NavbarLink;
   topbarLinks?: NavbarLink[];
   navigation?: Navigation[];
   topAnchor?: {
